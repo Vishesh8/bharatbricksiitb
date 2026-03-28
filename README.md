@@ -118,7 +118,9 @@ In Databricks: **Catalog → iitb → bharat_bricks → data → Upload to this 
 3. Click **Generate new token**
 4. Set expiration and select **repo** scope (full repository access)
 5. Copy the generated token (you won't see it again!)
-**OR**
+
+Alternatively, you can also do below:
+
 **4.2: Add Git Credentials in Databricks**
 1. In your Databricks workspace, click on your profile icon (top right)
 2. Select **Settings → Linked accounts → Add Git credential**
