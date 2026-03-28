@@ -38,7 +38,7 @@ SELECT
     )))
     ELSE 'clean'
   END AS content_moderation_label
-FROM STREAM(dbdemos_vishesh.bharat_bricks.posts)
+FROM STREAM(posts)
 WHERE
   -- Rule-based: remove deleted authors
   author != '[deleted]'
