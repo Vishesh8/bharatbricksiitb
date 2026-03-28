@@ -1,0 +1,62 @@
+bundle:
+  name: iitb_campus_advisor
+
+resources:
+  apps:
+    iitb_campus_advisor:
+      name: "iitb-campus-advisor"
+      description: "IIT Bombay Campus Advisor - Agentic RAG with Genie"
+      source_code_path: ./
+      config:
+        command: ["uv", "run", "start-app"]
+        env:
+          - name: MLFLOW_TRACKING_URI
+            value: "databricks"
+          - name: MLFLOW_REGISTRY_URI
+            value: "databricks-uc"
+          - name: API_PROXY
+            value: "http://localhost:8000/invocations"
+          - name: CHAT_APP_PORT
+            value: "3000"
+          - name: CHAT_PROXY_TIMEOUT_SECONDS
+            value: "300"
+          - name: MLFLOW_EXPERIMENT_ID
+            value_from: "experiment"
+
+      # Resources which this app has access to
+      resources:
+        # MLflow experiment for tracing
+        - name: 'experiment'
+          experiment:
+            experiment_id: "1159599289799406"
+            permission: 'CAN_MANAGE'
+
+        # Vector Search Index (RAG)
+        - name: 'posts_vector_index'
+          uc_securable:
+            securable_full_name: 'dbdemos_vishesh.bharat_bricks.gold_posts_vs_index'
+            securable_type: 'TABLE'
+            permission: 'SELECT'
+
+        # Genie Space (Analytics)
+        - name: 'iitb_genie'
+          genie_space:
+            name: 'IITB Junta Analytics'
+            space_id: '01f1294bf4441d919d11ea6b4796f9da'
+            permission: 'CAN_RUN'
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://e2-demo-field-eng.cloud.databricks.com
+
+  prod:
+    mode: production
+    workspace:
+      host: https://e2-demo-field-eng.cloud.databricks.com
+    resources:
+      apps:
+        iitb_campus_advisor:
+          name: iitb-campus-advisor

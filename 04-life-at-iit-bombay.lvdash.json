@@ -1,0 +1,1519 @@
+{
+  "datasets": [
+    {
+      "name": "0613ff28",
+      "displayName": "iitb_subreddit_metrics",
+      "asset_name": "dbdemos_vishesh.bharat_bricks.iitb_subreddit_metrics"
+    },
+    {
+      "name": "279d3b7c",
+      "displayName": "Top Posts",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  dbdemos_vishesh.bharat_bricks.gold_posts"
+      ]
+    },
+    {
+      "name": "556582ab",
+      "displayName": "Prolific Authors",
+      "queryLines": [
+        "SELECT\n",
+        "  author,\n",
+        "  COUNT(*) as post_count\n",
+        "FROM\n",
+        "  dbdemos_vishesh.bharat_bricks.gold_posts\n",
+        "WHERE\n",
+        "  author NOT IN ('[deleted]', 'AutoModerator')\n",
+        "GROUP BY\n",
+        "  author\n",
+        "HAVING\n",
+        "  COUNT(*) > 1\n",
+        "ORDER BY\n",
+        "  post_count DESC\n",
+        "LIMIT 10"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "60c0f823",
+      "displayName": "Overview",
+      "layout": [
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 🏛️ r/iitbombay Subreddit Overview\n",
+                "A window into campus life, academics, placements, hostel culture, and community discussions at IIT Bombay — sourced from Reddit."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "total_posts",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total Posts",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "total_comments",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "measure(Total Comments)",
+                      "expression": "MEASURE(`Total Comments`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total Comments",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(Total Comments)",
+                  "displayName": "Total Comments"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "unique_authors",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "measure(Unique Authors)",
+                      "expression": "MEASURE(`Unique Authors`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Unique Authors",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(Unique Authors)",
+                  "displayName": "Unique Authors"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "avg_score",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "measure(Avg Post Score)",
+                      "expression": "MEASURE(`Avg Post Score`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Avg Post Score",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(Avg Post Score)",
+                  "format": {
+                    "type": "number-plain",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    },
+                    "abbreviation": "none"
+                  },
+                  "displayName": "Avg Post Score"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "monthly_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "Post Month",
+                      "expression": "`Post Month`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Monthly Post Activity",
+                "showTitle": true
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Post Month",
+                  "displayName": "Post Month",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 8,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "content_pie",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    },
+                    {
+                      "name": "Content Type",
+                      "expression": "`Content Type`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Content Type Distribution",
+                "showTitle": true
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "measure(Total Posts)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Total Posts"
+                },
+                "color": {
+                  "fieldName": "Content Type",
+                  "legend": {
+                    "position": "bottom"
+                  },
+                  "displayName": "Content Type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 5,
+            "width": 4,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "flair_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "Flair",
+                      "expression": "`Flair`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`Flair` NOT IN ('Untagged')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Posts by Topic (Flair)",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Flair",
+                  "displayName": "Flair",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Flair",
+                  "legend": {
+                    "hide": true
+                  },
+                  "displayName": "Flair",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 11,
+            "width": 12,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "campus_pulse",
+      "displayName": "Campus Pulse",
+      "layout": [
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 📚 Campus Pulse\n",
+                "When do students post? What departments and hostels are most active? Activity patterns across the academic calendar."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "academic_term",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "Academic Term",
+                      "expression": "`Academic Term`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Activity by Academic Term",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Academic Term",
+                  "displayName": "Academic Term",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Academic Term",
+                  "legend": {
+                    "hide": true
+                  },
+                  "displayName": "Academic Term",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "day_hour_heatmap",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    },
+                    {
+                      "name": "Hour of Day",
+                      "expression": "`Hour of Day`"
+                    },
+                    {
+                      "name": "Day of Week",
+                      "expression": "`Day of Week`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Posting Heatmap — Day vs Hour (UTC)",
+                "showTitle": true
+              },
+              "widgetType": "heatmap",
+              "encodings": {
+                "x": {
+                  "fieldName": "Hour of Day",
+                  "displayName": "Hour of Day",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Day of Week",
+                  "displayName": "Day of Week",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "color": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "affiliation_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "Affiliation Category",
+                      "expression": "`Affiliation Category`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`Affiliation Category` NOT IN ('Unknown')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Posts by Affiliation Type",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Affiliation Category",
+                  "displayName": "Affiliation Category",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Affiliation Category",
+                  "legend": {
+                    "hide": true
+                  },
+                  "displayName": "Affiliation Category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "yearly_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "Post Month",
+                      "expression": "`Post Month`"
+                    },
+                    {
+                      "name": "measure(Cumulative Posts)",
+                      "expression": "MEASURE(`Cumulative Posts`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Subreddit Growth by Year",
+                "showTitle": true
+              },
+              "widgetType": "area",
+              "encodings": {
+                "x": {
+                  "fieldName": "Post Month",
+                  "displayName": "Post Month",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Cumulative Posts)",
+                  "displayName": "Cumulative Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 8,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "day_of_week",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "Day of Week",
+                      "expression": "`Day of Week`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Activity by Day of Week",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Day of Week",
+                  "displayName": "Day of Week",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "custom-order",
+                      "orderedValues": [
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                        "Saturday",
+                        "Sunday"
+                      ]
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Day of Week",
+                  "legend": {
+                    "hide": true
+                  },
+                  "displayName": "Day of Week",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "author_affiliation",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "Affiliation Category",
+                      "expression": "`Affiliation Category`"
+                    },
+                    {
+                      "name": "Author Affiliation",
+                      "expression": "`Author Affiliation`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`Affiliation Category` NOT IN ('Unknown')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top Author Affiliations",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Author Affiliation",
+                  "displayName": "Author Affiliation",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "Affiliation Category",
+                  "legend": {
+                    "position": "right"
+                  },
+                  "displayName": "Affiliation Category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 14,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "community",
+      "displayName": "Community & Top Posts",
+      "layout": [
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 💬 Community & Top Posts\n",
+                "The most upvoted posts, prolific authors, and discussion depth across the r/iitbombay community."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "engagement_rate",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "measure(High Engagement Rate)",
+                      "expression": "MEASURE(`High Engagement Rate`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "High Engagement Rate",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(High Engagement Rate)",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  },
+                  "displayName": "High Engagement Rate"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "avg_upvote",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "measure(Avg Upvote Ratio)",
+                      "expression": "MEASURE(`Avg Upvote Ratio`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Avg Upvote Ratio",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(Avg Upvote Ratio)",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  },
+                  "displayName": "Avg Upvote Ratio"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "controversial",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "measure(Controversial Post Rate)",
+                      "expression": "MEASURE(`Controversial Post Rate`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Controversial Post Rate",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(Controversial Post Rate)",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  },
+                  "displayName": "Controversial Post Rate"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "op_engagement",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "measure(OP Engagement Rate)",
+                      "expression": "MEASURE(`OP Engagement Rate`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "OP Engagement Rate",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(OP Engagement Rate)",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  },
+                  "displayName": "OP Engagement Rate"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 2,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "top_posts_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "279d3b7c",
+                  "fields": [
+                    {
+                      "name": "title",
+                      "expression": "`title`"
+                    },
+                    {
+                      "name": "author",
+                      "expression": "`author`"
+                    },
+                    {
+                      "name": "score",
+                      "expression": "`score`"
+                    },
+                    {
+                      "name": "num_comments",
+                      "expression": "`num_comments`"
+                    },
+                    {
+                      "name": "upvote_ratio",
+                      "expression": "`upvote_ratio`"
+                    },
+                    {
+                      "name": "flair",
+                      "expression": "`flair`"
+                    },
+                    {
+                      "name": "content_type",
+                      "expression": "`content_type`"
+                    },
+                    {
+                      "name": "created_at",
+                      "expression": "`created_at`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Top Posts by Score",
+                "showTitle": true
+              },
+              "rowsPerPage": 25,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "title",
+                    "displayName": "Title"
+                  },
+                  {
+                    "fieldName": "author",
+                    "displayName": "Author"
+                  },
+                  {
+                    "fieldName": "score",
+                    "displayName": "Score"
+                  },
+                  {
+                    "fieldName": "num_comments",
+                    "displayName": "Comments"
+                  },
+                  {
+                    "fieldName": "upvote_ratio",
+                    "displayName": "Upvote Ratio"
+                  },
+                  {
+                    "fieldName": "flair",
+                    "displayName": "Flair"
+                  },
+                  {
+                    "fieldName": "content_type",
+                    "displayName": "Content Type"
+                  },
+                  {
+                    "fieldName": "created_at",
+                    "displayName": "Posted"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 12,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "top_authors",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "556582ab",
+                  "fields": [
+                    {
+                      "name": "author",
+                      "expression": "`author`"
+                    },
+                    {
+                      "name": "sum(post_count)",
+                      "expression": "SUM(`post_count`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Most Prolific Authors",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "author",
+                  "displayName": "Author",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(post_count)",
+                  "displayName": "Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "engagement_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "Post Month",
+                      "expression": "`Post Month`"
+                    },
+                    {
+                      "name": "measure(Total Engagement Score)",
+                      "expression": "MEASURE(`Total Engagement Score`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Monthly Engagement Score",
+                "showTitle": true
+              },
+              "widgetType": "area",
+              "encodings": {
+                "x": {
+                  "fieldName": "Post Month",
+                  "displayName": "Post Month",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Total Engagement Score)",
+                  "displayName": "Total Engagement",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 12,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "global_filters",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "flair_filter",
+            "queries": [
+              {
+                "name": "dashboards/01f129b941c21a688b47750ba9705206/datasets/01f129b9ab8216b1bf49ebb8fc85a99b_Flair",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "Flair",
+                      "expression": "`Flair`"
+                    },
+                    {
+                      "name": "Flair_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f129b941c21a688b47750ba9705206/datasets/01f129ba00ad1095b492ac564f6d222d_flair",
+                "query": {
+                  "datasetName": "279d3b7c",
+                  "fields": [
+                    {
+                      "name": "flair",
+                      "expression": "`flair`"
+                    },
+                    {
+                      "name": "flair_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Flair",
+                "showTitle": true
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Flair",
+                    "queryName": "dashboards/01f129b941c21a688b47750ba9705206/datasets/01f129b9ab8216b1bf49ebb8fc85a99b_Flair"
+                  },
+                  {
+                    "fieldName": "flair",
+                    "queryName": "dashboards/01f129b941c21a688b47750ba9705206/datasets/01f129ba00ad1095b492ac564f6d222d_flair"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "date_filter",
+            "queries": [
+              {
+                "name": "dashboards/01f129b941c21a688b47750ba9705206/datasets/01f129b9ab8216b1bf49ebb8fc85a99b_Post Date",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "Post Date",
+                      "expression": "`Post Date`"
+                    },
+                    {
+                      "name": "Post Date_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01f129b941c21a688b47750ba9705206/datasets/01f129ba00ad1095b492ac564f6d222d_created_at",
+                "query": {
+                  "datasetName": "279d3b7c",
+                  "fields": [
+                    {
+                      "name": "created_at",
+                      "expression": "`created_at`"
+                    },
+                    {
+                      "name": "created_at_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Date Range",
+                "showTitle": true
+              },
+              "widgetType": "filter-date-range-picker",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Post Date",
+                    "queryName": "dashboards/01f129b941c21a688b47750ba9705206/datasets/01f129b9ab8216b1bf49ebb8fc85a99b_Post Date"
+                  },
+                  {
+                    "fieldName": "created_at",
+                    "queryName": "dashboards/01f129b941c21a688b47750ba9705206/datasets/01f129ba00ad1095b492ac564f6d222d_created_at"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 0,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "term_filter",
+            "queries": [
+              {
+                "name": "dashboards/01f129b941c21a688b47750ba9705206/datasets/01f129b9ab8216b1bf49ebb8fc85a99b_Academic Term",
+                "query": {
+                  "datasetName": "0613ff28",
+                  "fields": [
+                    {
+                      "name": "Academic Term",
+                      "expression": "`Academic Term`"
+                    },
+                    {
+                      "name": "Academic Term_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Academic Term",
+                "showTitle": true
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Academic Term",
+                    "queryName": "dashboards/01f129b941c21a688b47750ba9705206/datasets/01f129b9ab8216b1bf49ebb8fc85a99b_Academic Term"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 0,
+            "width": 4,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "canvasBackgroundColor": {
+        "light": "#F5F6F8",
+        "dark": "#1A1E24"
+      },
+      "widgetBackgroundColor": {
+        "light": "#FFFFFF",
+        "dark": "#252B33"
+      },
+      "widgetBorderColor": {
+        "light": "#E0E3E8",
+        "dark": "#3A4150"
+      },
+      "selectionColor": {
+        "light": "#003B6F",
+        "dark": "#3498DB"
+      },
+      "visualizationColors": [
+        "#003B6F",
+        "#E87722",
+        "#2B7A78",
+        "#F2994A",
+        "#6C5CE7",
+        "#EB5757",
+        "#27AE60",
+        "#8E44AD",
+        "#3498DB",
+        "#F39C12"
+      ],
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED",
+      "fontFamily": "Verdana"
+    },
+    "applyModeEnabled": false
+  }
+}
