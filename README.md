@@ -118,14 +118,14 @@ In Databricks: **Catalog → iitb → bharat_bricks → data → Upload to this 
 3. Click **Generate new token**
 4. Set expiration and select **repo** scope (full repository access)
 5. Copy the generated token (you won't see it again!)
-OR
-**4.1: Add Git Credentials in Databricks**
+**OR**
+**4.2: Add Git Credentials in Databricks**
 1. In your Databricks workspace, click on your profile icon (top right)
 2. Select **Settings → Linked accounts → Add Git credential**
 3. Choose **Personal access token** as authentication method
 4. Paste your GitHub token and save
 
-**4.2: Create Git Folder**
+**4.3: Create Git Folder**
 1. Navigate to **Workspace → Create → Git folder**
 2. Enter your repository URL in format: `https://github.com/username/bharatbricksiitb-git.git`
 3. Click **Create Git folder**
