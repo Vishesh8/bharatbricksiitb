@@ -118,14 +118,14 @@ In Databricks: **Catalog → iitb → bharat_bricks → data → Upload to this 
 3. Click **Generate new token**
 4. Set expiration and select **repo** scope (full repository access)
 5. Copy the generated token (you won't see it again!)
-
-**4.2: Add Git Credentials in Databricks**
+OR
+**4.1: Add Git Credentials in Databricks**
 1. In your Databricks workspace, click on your profile icon (top right)
 2. Select **Settings → Linked accounts → Add Git credential**
 3. Choose **Personal access token** as authentication method
 4. Paste your GitHub token and save
 
-**4.3: Create Git Folder**
+**4.2: Create Git Folder**
 1. Navigate to **Workspace → Create → Git folder**
 2. Enter your repository URL in format: `https://github.com/username/bharatbricksiitb-git.git`
 3. Click **Create Git folder**
@@ -139,15 +139,6 @@ After creating the Git folder, navigate to it in your Databricks workspace:
 1. Go to **Workspace → Repos → bharatbricksiitb-git** (or your repository name)
 2. You should see all project files and folders available
 3. Click on notebooks to open them directly in Databricks
-
-**Step 6: Configure Project Files**
-
-```bash
-# Update all project files to use your catalog
-python setup.py --catalog iitb --schema bharat_bricks
-```
-
-> **Alternative**: You can also use the widget inputs at the top of each notebook to set your catalog and schema without running setup.py.
 
 ### Deploy Pipeline
 
@@ -172,11 +163,6 @@ Run notebooks in order (use the **widget inputs** at the top to set your catalog
    - Click **Run** to execute the metric view creation
    - Verify creation by going to **Catalog → bharat_bricks → Tables(9) → iitb_subreddit_metrics**
    - Click on the metric view to explore its **Details** and structure
-
-4. **Deploy dashboard**:
-   ```bash
-   python 04-deploy-dashboard.py
-   ```
 
 > **💡 Prefer UI?** See the **Alternative: UI-Based Pipeline Creation** and **Alternative: UI-Based Dashboard Creation** sections below for step-by-step visual workflows.
 
