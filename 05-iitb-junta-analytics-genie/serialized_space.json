@@ -1,0 +1,560 @@
+{
+  "version": 2,
+  "data_sources": {
+    "tables": [
+      {
+        "identifier": "dbdemos_vishesh.bharat_bricks.gold_comments",
+        "column_configs": [
+          {
+            "column_name": "author",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "body",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "comment_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "created_at",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "depth",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "distinguished",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "is_submitter",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "permalink",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "post_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "score",
+            "enable_format_assistance": true
+          }
+        ]
+      },
+      {
+        "identifier": "dbdemos_vishesh.bharat_bricks.gold_posts",
+        "column_configs": [
+          {
+            "column_name": "author",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "author_flair_text",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "body",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "content_type",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "created_at",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "domain",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "flair",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "is_self",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "is_video",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "locked",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "num_comments",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "permalink",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "post_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "score",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "title",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "upvote_ratio",
+            "enable_format_assistance": true
+          }
+        ]
+      }
+    ],
+    "metric_views": [
+      {
+        "identifier": "dbdemos_vishesh.bharat_bricks.iitb_subreddit_metrics",
+        "column_configs": [
+          {
+            "column_name": "Academic Term",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "Affiliation Category",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "Author",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "Author Affiliation",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "Avg Comment Score"
+          },
+          {
+            "column_name": "Avg Comments per Post"
+          },
+          {
+            "column_name": "Avg Post Score"
+          },
+          {
+            "column_name": "Avg Thread Depth"
+          },
+          {
+            "column_name": "Avg Unique Commenters"
+          },
+          {
+            "column_name": "Avg Upvote Ratio"
+          },
+          {
+            "column_name": "Content Type",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "Controversial Post Rate"
+          },
+          {
+            "column_name": "Cumulative Posts"
+          },
+          {
+            "column_name": "Daily Posts"
+          },
+          {
+            "column_name": "Day of Week",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "Domain",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "Flair",
+            "enable_format_assistance": true,
+            "enable_entity_matching": true
+          },
+          {
+            "column_name": "High Engagement Posts"
+          },
+          {
+            "column_name": "High Engagement Rate"
+          },
+          {
+            "column_name": "Hour of Day",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "Is Locked",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "Is Text Post",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "Is Video",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "Locked Post Count"
+          },
+          {
+            "column_name": "Locked Post Rate"
+          },
+          {
+            "column_name": "Max Post Score"
+          },
+          {
+            "column_name": "Median Post Score"
+          },
+          {
+            "column_name": "Mod Action Count"
+          },
+          {
+            "column_name": "OP Engagement Rate"
+          },
+          {
+            "column_name": "Post Date",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "Post Month",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "Post Quarter",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "Post Year",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "T30D Posts"
+          },
+          {
+            "column_name": "T7D Posts"
+          },
+          {
+            "column_name": "Text Post Ratio"
+          },
+          {
+            "column_name": "Total Comments"
+          },
+          {
+            "column_name": "Total Engagement Score"
+          },
+          {
+            "column_name": "Total Post Score"
+          },
+          {
+            "column_name": "Total Posts"
+          },
+          {
+            "column_name": "Unique Authors"
+          }
+        ]
+      }
+    ]
+  },
+  "instructions": {
+    "text_instructions": [
+      {
+        "id": "b1c2d3e4f5a6789012345678901234b1",
+        "content": [
+          "DATA CONTEXT:\n",
+          "This Genie space analyzes student life at IIT Bombay using Reddit data from r/iitbombay subreddit.\n",
+          "- Posts span from April 2018 to March 2026 (~1,100 posts, ~12,600 comments)\n",
+          "- Academic Terms: 'Spring Semester' (Jan-Apr), 'Autumn Semester' (Jul-Nov), 'Summer Break' (May-Jun, Dec)\n",
+          "- Flairs indicate topic: Question, Acads, Tech, Cult, Sports, Polt, IIT Selection\n",
+          "- Affiliation Categories: Hostel, Department, Alumni, Student Body/Club, Unknown\n",
+          "\n",
+          "ANALYTICS TERMINOLOGY:\n",
+          "- Engagement = comments + votes combined\n",
+          "- High engagement post = 20+ comments OR 100+ score\n",
+          "- OP = Original Poster, Thread depth = how nested comment replies go\n",
+          "\n",
+          "QUERY GUIDANCE:\n",
+          "- For aggregate metrics use iitb_subreddit_metrics metric view with MEASURE()\n",
+          "- For text search use gold_posts, for comments use gold_comments\n",
+          "- Join posts and comments on post_id\n",
+          "\n",
+          "RESPONSE STYLE - USE IITB LINGO:\n",
+          "Always try to respond using IIT Bombay campus slang wherever possible.\n",
+          "\n",
+          "KEY LINGO:\n",
+          "SUCCESS: crack/craxxx (achievement), macha/machaxx (ultimate success), faadu/god/godmax (awesome), stud (expert), peace (relief), ok types (good)\n",
+          "FAILURE: hug (poor performance), kat (lose out), scope (no chance!), give up (bad), daya (negative)\n",
+          "EFFORT: mug (study), slog (work hard), fight (try hard), enthu (enthusiastic), jugaad (manage), night out (staying up)\n",
+          "GENERAL: junta (everyone), fundaes (insights), gyaan (tips), chamka (understand), chamkaa (explain), arbit (weird), hazaar/infi (a lot), lukkha (timepass), cack (conversation)\n",
+          "SUFFIXES: -max (superlative), -giri (act of doing), -aapa (emphasis)\n",
+          "CAMPUS: freshie (1st yr), sophie (2nd yr), dadda (Dual Degree), insti (Institute), dep (department), poltu (political)\n",
+          "\n",
+          "EXAMPLE: Instead of 'This post performed well' say 'Boss, this post MACHAXX'd! Hazaar comments from the junta - total godmax engagement.'\n",
+          "Keep it natural - 2-4 lingo terms per response. Don't overdo it!"
+        ]
+      }
+    ],
+    "example_question_sqls": [
+      {
+        "id": "c1d2e3f4a5b6789012345678901234c1",
+        "question": [
+          "What are the top posts by engagement?"
+        ],
+        "sql": [
+          "SELECT title, author, flair, score, num_comments, created_at FROM dbdemos_vishesh.bharat_bricks.gold_posts ORDER BY (score + num_comments) DESC LIMIT 10"
+        ]
+      },
+      {
+        "id": "c1d2e3f4a5b6789012345678901234c2",
+        "question": [
+          "Show posting trends by academic term"
+        ],
+        "sql": [
+          "SELECT `Academic Term`, MEASURE(`Total Posts`) as posts, MEASURE(`Avg Post Score`) as avg_score FROM dbdemos_vishesh.bharat_bricks.iitb_subreddit_metrics GROUP BY `Academic Term`"
+        ]
+      },
+      {
+        "id": "c1d2e3f4a5b6789012345678901234c3",
+        "question": [
+          "What is the flair distribution?"
+        ],
+        "sql": [
+          "SELECT Flair, MEASURE(`Total Posts`) as posts, MEASURE(`High Engagement Rate`) as engagement_rate FROM dbdemos_vishesh.bharat_bricks.iitb_subreddit_metrics GROUP BY Flair ORDER BY posts DESC"
+        ]
+      },
+      {
+        "id": "c1d2e3f4a5b6789012345678901234c4",
+        "question": [
+          "Who are the most active authors?"
+        ],
+        "sql": [
+          "SELECT author, COUNT(*) as post_count, SUM(num_comments) as total_comments_received FROM dbdemos_vishesh.bharat_bricks.gold_posts GROUP BY author ORDER BY post_count DESC LIMIT 20"
+        ]
+      }
+    ],
+    "join_specs": [
+      {
+        "id": "b1c2d3e4f5a6789012345678901234b3",
+        "left": {
+          "identifier": "dbdemos_vishesh.bharat_bricks.gold_posts",
+          "alias": "gold_posts"
+        },
+        "right": {
+          "identifier": "dbdemos_vishesh.bharat_bricks.gold_comments",
+          "alias": "gold_comments"
+        },
+        "sql": [
+          "`gold_posts`.`post_id` = `gold_comments`.`post_id`",
+          "--rt=FROM_RELATIONSHIP_TYPE_ONE_TO_MANY--"
+        ],
+        "instruction": [
+          "To identify all the comments on a particular post"
+        ]
+      }
+    ]
+  },
+  "benchmarks": {
+    "questions": [
+      {
+        "id": "01f129aac31d18698437330ea5ffa6f4",
+        "question": [
+          "How do posting trends and average post scores vary by academic term?"
+        ],
+        "answer": [
+          {
+            "format": "SQL",
+            "content": [
+              "SELECT\n",
+              "  `Academic Term`,\n",
+              "  MEASURE(`Total Posts`) as posts,\n",
+              "  MEASURE(`Avg Post Score`) as avg_score\n",
+              "FROM\n",
+              "  dbdemos_vishesh.bharat_bricks.iitb_subreddit_metrics\n",
+              "GROUP BY\n",
+              "  `Academic Term`"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "01f129aab6d511cd8be94dab2574f059",
+        "question": [
+          "What are the top posts by combined engagement of score and comments?"
+        ],
+        "answer": [
+          {
+            "format": "SQL",
+            "content": [
+              "SELECT\n",
+              "  title,\n",
+              "  author,\n",
+              "  flair,\n",
+              "  score,\n",
+              "  num_comments,\n",
+              "  created_at\n",
+              "FROM\n",
+              "  dbdemos_vishesh.bharat_bricks.gold_posts\n",
+              "ORDER BY\n",
+              "  (score + num_comments) DESC\n",
+              "LIMIT 10"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "01f129aaacd61260a1c2cb57aea46e25",
+        "question": [
+          "What are the top topics discussed in the insti junta based on total posts, average score, average comments and high engagement rate?"
+        ],
+        "answer": [
+          {
+            "format": "SQL",
+            "content": [
+              "SELECT\n",
+              "  `Flair`,\n",
+              "  MEASURE(`Total Posts`) as `total_posts`,\n",
+              "  MEASURE(`Avg Post Score`) as `avg_score`,\n",
+              "  MEASURE(`Avg Comments per Post`) as `avg_comments`,\n",
+              "  MEASURE(`High Engagement Rate`) as `high_engagement_rate`\n",
+              "FROM\n",
+              "  `dbdemos_vishesh`.`bharat_bricks`.`iitb_subreddit_metrics`\n",
+              "WHERE\n",
+              "  `Flair` IS NOT NULL\n",
+              "GROUP BY\n",
+              "  `Flair`\n",
+              "ORDER BY\n",
+              "  `total_posts` DESC"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "01f129aaa44f18a29bd96c46fcf56fc9",
+        "question": [
+          "Which posts received low engagement this year, showing up poor scoring and low comment counts?"
+        ],
+        "answer": [
+          {
+            "format": "SQL",
+            "content": [
+              "SELECT\n",
+              "  `title`,\n",
+              "  `author`,\n",
+              "  `score`,\n",
+              "  `num_comments`,\n",
+              "  `created_at`\n",
+              "FROM\n",
+              "  `dbdemos_vishesh`.`bharat_bricks`.`gold_posts`\n",
+              "WHERE\n",
+              "  YEAR(`created_at`) = 2026\n",
+              "  AND `score` IS NOT NULL\n",
+              "  AND `num_comments` IS NOT NULL\n",
+              "  AND (`score` + `num_comments`) <= 5\n",
+              "ORDER BY\n",
+              "  (`score` + `num_comments`) ASC,\n",
+              "  `created_at` DESC\n",
+              "LIMIT 20"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "01f129aa9d5012d0a740521ac67eed4b",
+        "question": [
+          "What are the most discussed topics by the junta based on post flair?"
+        ],
+        "answer": [
+          {
+            "format": "SQL",
+            "content": [
+              "SELECT\n",
+              "  `Flair`,\n",
+              "  MEASURE(`Total Posts`) AS `posts`\n",
+              "FROM\n",
+              "  `dbdemos_vishesh`.`bharat_bricks`.`iitb_subreddit_metrics`\n",
+              "WHERE\n",
+              "  `Flair` IS NOT NULL\n",
+              "GROUP BY\n",
+              "  `Flair`\n",
+              "ORDER BY\n",
+              "  `posts` DESC"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "01f129aa8c65185ba6bbfee3e9a1cda9",
+        "question": [
+          "What is the distribution of posts by flair and their high engagement rates?"
+        ],
+        "answer": [
+          {
+            "format": "SQL",
+            "content": [
+              "SELECT\n",
+              "  Flair,\n",
+              "  MEASURE(`Total Posts`) as posts,\n",
+              "  MEASURE(`High Engagement Rate`) as engagement_rate\n",
+              "FROM\n",
+              "  dbdemos_vishesh.bharat_bricks.iitb_subreddit_metrics\n",
+              "GROUP BY\n",
+              "  Flair\n",
+              "ORDER BY\n",
+              "  posts DESC"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "01f129aa834f1d6a8e37dc96362f3a1a",
+        "question": [
+          "Who are the top authors by post count and total comments received?"
+        ],
+        "answer": [
+          {
+            "format": "SQL",
+            "content": [
+              "SELECT\n",
+              "  author,\n",
+              "  COUNT(*) as post_count,\n",
+              "  SUM(num_comments) as total_comments_received\n",
+              "FROM\n",
+              "  dbdemos_vishesh.bharat_bricks.gold_posts\n",
+              "GROUP BY\n",
+              "  author\n",
+              "ORDER BY\n",
+              "  post_count DESC\n",
+              "LIMIT 20"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

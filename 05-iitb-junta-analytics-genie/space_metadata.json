@@ -1,0 +1,15 @@
+{
+  "title": "05 IITB Junta Analytics",
+  "description": "Yo boss! Explore what the IITB junta is discussing on Reddit. Get fundaes on posting trends, find out which topics cracked it, and discover the studs of the community. Peace types analytics for the r/iitbombay subreddit.",
+  "source_space_id": "01f1294bf4441d919d11ea6b4796f9da",
+  "source_warehouse_id": "0d2d79147a65460b",
+  "source_catalog": "dbdemos_vishesh",
+  "source_schema": "bharat_bricks",
+  "required_tables": [
+    "gold_posts",
+    "gold_comments"
+  ],
+  "required_metric_views": [
+    "iitb_subreddit_metrics"
+  ]
+}
