@@ -1,10 +1,15 @@
 import logging
+import os
 from datetime import datetime
 from typing import AsyncGenerator, Optional
 
 import litellm
 import mlflow
 from databricks.sdk import WorkspaceClient
+
+# Configuration - override via environment variables
+CATALOG = os.environ.get("DATABRICKS_CATALOG", "dbdemos_vishesh")
+SCHEMA = os.environ.get("DATABRICKS_SCHEMA", "bharat_bricks")
 from databricks_langchain import (
     ChatDatabricks,
     DatabricksMCPServer,
@@ -83,7 +88,7 @@ def init_mcp_client(workspace_client: WorkspaceClient) -> DatabricksMultiServerM
     # Vector Search MCP Server for RAG
     vector_search_server = DatabricksMCPServer(
         name="iitb-posts-search",
-        url=f"{host_name}/api/2.0/mcp/vector-search/dbdemos_vishesh/bharat_bricks/gold_posts_vs_index",
+        url=f"{host_name}/api/2.0/mcp/vector-search/{CATALOG}/{SCHEMA}/gold_posts_vs_index",
         workspace_client=workspace_client,
     )
 
