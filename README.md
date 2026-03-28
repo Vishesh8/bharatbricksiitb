@@ -105,15 +105,9 @@ Upload the JSON files from `raw_data/` to your volume:
 python setup.py --catalog iitb --schema bharat_bricks
 ```
 
-**Alternative**: Use environment variables for runtime override:
-```bash
-export DATABRICKS_CATALOG="iitb"
-export DATABRICKS_SCHEMA="bharat_bricks"
-```
-
 ### Deploy Pipeline
 
-Run notebooks in order:
+Run notebooks in order (use the **widget inputs** at the top to set your catalog/schema):
 
 1. **`01-data-ingestion.ipynb`** — Auto Loader creates `posts` and `comments` tables
 
@@ -134,12 +128,10 @@ Run notebooks in order:
 ```bash
 cd 05-iitb-junta-analytics-genie
 
-# Set target environment (get warehouse ID from SQL Warehouses page)
+# Set warehouse ID (get from SQL Warehouses page in Databricks)
 export TARGET_WAREHOUSE_ID="your_warehouse_id"
-export TARGET_CATALOG="iitb"
-export TARGET_SCHEMA="bharat_bricks"
 
-# Deploy
+# Deploy (uses catalog/schema from setup.py)
 python deploy.py
 ```
 
@@ -183,10 +175,11 @@ LIMIT 20;
 
 | Issue | Solution |
 |-------|----------|
-| "Catalog not found" | Run `setup.py --catalog YOUR_CATALOG` or set `DATABRICKS_CATALOG` env var |
+| "Catalog not found" | Run `setup.py --catalog YOUR_CATALOG` to update project files |
 | "Volume not found" | Create volume: `CREATE VOLUME iitb.bharat_bricks.data` |
 | "Table not found" | Run notebooks in order: 01 → 02 → 03 |
 | Genie "warehouse not found" | Get warehouse ID from **SQL Warehouses** page, set `TARGET_WAREHOUSE_ID` |
+| Wrong catalog in notebook | Use the widget inputs at the top of the notebook to set your catalog |
 
 ## License
 

@@ -2,50 +2,25 @@
 """
 Deploy the IITB Lakeview Dashboard to a Databricks workspace.
 
-This script reads the exported dashboard JSON, replaces catalog/schema references,
-and creates/updates the dashboard via the Lakeview API.
+This script reads the exported dashboard JSON and creates the dashboard
+via the Lakeview API.
 
-Environment Variables:
-    DATABRICKS_CATALOG: Target catalog name (default: dbdemos_vishesh)
-    DATABRICKS_SCHEMA: Target schema name (default: bharat_bricks)
+Configuration:
+    Run `python setup.py --catalog YOUR_CATALOG` first to update catalog references
+    in the dashboard JSON file.
 
 Usage:
     python 04-deploy-dashboard.py
-
-    # Or with explicit catalog:
-    DATABRICKS_CATALOG=my_catalog python 04-deploy-dashboard.py
 """
 
 import json
-import os
 import sys
 from pathlib import Path
 
 from databricks.sdk import WorkspaceClient
 
 
-# Default values (original hardcoded values)
-DEFAULT_CATALOG = "dbdemos_vishesh"
-DEFAULT_SCHEMA = "bharat_bricks"
-
-
-def replace_catalog_schema(content: str, old_catalog: str, new_catalog: str,
-                           old_schema: str, new_schema: str) -> str:
-    """Replace catalog and schema references in content."""
-    old_fqn = f"{old_catalog}.{old_schema}"
-    new_fqn = f"{new_catalog}.{new_schema}"
-
-    content = content.replace(old_fqn, new_fqn)
-    content = content.replace(f"`{old_catalog}`.`{old_schema}`", f"`{new_catalog}`.`{new_schema}`")
-
-    return content
-
-
 def main():
-    # Get configuration from environment
-    target_catalog = os.environ.get("DATABRICKS_CATALOG", DEFAULT_CATALOG)
-    target_schema = os.environ.get("DATABRICKS_SCHEMA", DEFAULT_SCHEMA)
-
     script_dir = Path(__file__).parent
     dashboard_file = script_dir / "04-life-at-iit-bombay.lvdash.json"
 
@@ -55,21 +30,9 @@ def main():
 
     print("IITB Dashboard Deployment")
     print("=========================")
-    print(f"Source: {DEFAULT_CATALOG}.{DEFAULT_SCHEMA}")
-    print(f"Target: {target_catalog}.{target_schema}")
-    print()
 
-    # Read and transform dashboard JSON
+    # Read dashboard JSON (catalog/schema already set by setup.py)
     dashboard_json = dashboard_file.read_text()
-
-    if target_catalog != DEFAULT_CATALOG or target_schema != DEFAULT_SCHEMA:
-        dashboard_json = replace_catalog_schema(
-            dashboard_json,
-            DEFAULT_CATALOG, target_catalog,
-            DEFAULT_SCHEMA, target_schema
-        )
-        print(f"Replaced catalog/schema references")
-
     dashboard_def = json.loads(dashboard_json)
 
     # Initialize Databricks client

@@ -7,9 +7,10 @@ import litellm
 import mlflow
 from databricks.sdk import WorkspaceClient
 
-# Configuration - override via environment variables
+# Configuration - override via environment variables (set in databricks.yml/app.yaml)
 CATALOG = os.environ.get("DATABRICKS_CATALOG", "dbdemos_vishesh")
 SCHEMA = os.environ.get("DATABRICKS_SCHEMA", "bharat_bricks")
+GENIE_SPACE_ID = os.environ.get("GENIE_SPACE_ID", "01f1294bf4441d919d11ea6b4796f9da")
 from databricks_langchain import (
     ChatDatabricks,
     DatabricksMCPServer,
@@ -95,7 +96,7 @@ def init_mcp_client(workspace_client: WorkspaceClient) -> DatabricksMultiServerM
     # Genie MCP Server for Analytics
     genie_server = DatabricksMCPServer(
         name="iitb-analytics",
-        url=f"{host_name}/api/2.0/mcp/genie/01f1294bf4441d919d11ea6b4796f9da",
+        url=f"{host_name}/api/2.0/mcp/genie/{GENIE_SPACE_ID}",
         workspace_client=workspace_client,
     )
 
