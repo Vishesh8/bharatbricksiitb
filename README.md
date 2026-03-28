@@ -34,6 +34,8 @@ raw_data/               JSON files from Reddit API
 | ↳ `5-creating-etl-pipelines.pdf` | UI-based ETL pipeline creation with AI Gateway & event logging |
 | ↳ `6-create-dashboard.pdf` | Dashboard creation via Databricks UI with visualization widgets |
 | ↳ `7-create-metric-view.pdf` | Creating metric views using Genie Code and UI navigation |
+| ↳ `8-create-genie-space.pdf` | Deploy Genie Space via notebook with Genie Code assistance |
+| ↳ `9-use-genie-space.pdf` | Query subreddit data using natural language in Genie |
 | `raw_data/` | Source JSON files (~1,300 posts, ~17K comments) |
 | `01-data-ingestion.ipynb` | Auto Loader pipeline → `posts` and `comments` tables |
 | `02-data-transformation/` | SQL transforms: silver_posts, silver_comments, gold_posts, gold_comments |
@@ -77,6 +79,8 @@ raw_data/               JSON files from Reddit API
 > - [5-creating-etl-pipelines.pdf](instructions/5-creating-etl-pipelines.pdf) — UI-based ETL pipeline creation with AI Gateway & event logging
 > - [6-create-dashboard.pdf](instructions/6-create-dashboard.pdf) — Dashboard creation via Databricks UI with visualization widgets
 > - [7-create-metric-view.pdf](instructions/7-create-metric-view.pdf) — Creating metric views using Genie Code and UI navigation
+> - [8-create-genie-space.pdf](instructions/8-create-genie-space.pdf) — Deploy Genie Space via notebook with Genie Code assistance
+> - [9-use-genie-space.pdf](instructions/9-use-genie-space.pdf) — Query subreddit data using natural language in Genie
 
 ### Quick Start
 
@@ -333,6 +337,36 @@ Monitor data flow and dependencies:
 
 ### Deploy Genie Space
 
+**Option A: Notebook with Genie Code** (Recommended — [visual guide](instructions/8-create-genie-space.pdf))
+
+1. Navigate to **Workspace → bharatbricksiitb → 05-iitb-junta-analytics-genie → deploy**
+2. Click the **Genie Code** icon and type: `let's find the warehouse id and create this genie space`
+3. When prompted for permissions, click **Ask every time** → **Always allow**
+4. Click **Accept** to apply Genie Code suggestions (it will find your warehouse automatically)
+5. Click **Allow** when prompted to run cells
+6. Continue clicking **Always allow in current thread** for subsequent permission dialogs
+7. Click **Accept all** to apply all suggested changes
+8. Once deployed, click **Open Genie Space: 05 IITB Junta Analytics** link in the output
+
+**Exploring Your Genie Space:**
+
+After deployment, explore the Genie Space configuration:
+- **About** — Space name, owner, warehouse, and description
+- **Data** — Connected tables (`gold_comments`, `gold_posts`, `iitb_subreddit_metrics`)
+- **Instructions** — General instructions, joins, SQL expressions, and SQL queries
+- **Benchmarks** — Example questions for evaluation
+- **Monitoring** — Activity history, errors, and feedback
+
+**Sharing Your Genie Space:**
+
+1. Click **Share** in the top menu
+2. In the sharing dialog, click the subject dropdown
+3. Select **All workspace users**
+4. Choose permission level: **Can View** (recommended) or **Can Manage**
+5. Click **Add** to grant access
+
+**Option B: Command Line**
+
 ```bash
 cd 05-iitb-junta-analytics-genie
 
@@ -344,6 +378,42 @@ python deploy.py
 ```
 
 > **Note**: Free Edition includes a Starter SQL warehouse that works with Genie.
+
+### Using Your Genie Space ([visual guide](instructions/9-use-genie-space.pdf))
+
+Once deployed, use Genie to analyze subreddit data with natural language:
+
+**Accessing Genie:**
+
+1. Click **Genie** in the left sidebar
+2. Select your **05 IITB Junta Analytics** space
+3. Type questions in the "Ask your question..." field
+
+**Example Questions to Try:**
+
+| Question | What You'll Get |
+|----------|-----------------|
+| "Show monthly post trends for 2025" | Time series chart of posting activity by month |
+| "What is the distribution of posts by flair for the year 2025?" | Bar chart showing post counts by category (Tech, Survey, Question, etc.) |
+| "Find trends for posting activity by day of week and semester cycles" | Analysis of when students post most (weekdays vs weekends, by academic term) |
+| "Who are the most active authors?" | Leaderboard of top contributors |
+| "Show High Engagement Rate by Flair" | Which categories get the most interaction |
+
+**Understanding Genie Responses:**
+
+Genie provides:
+- **Analysis summary** — Natural language interpretation of your question
+- **Result table** — Raw data with sortable columns
+- **Visualizations** — Auto-generated charts (click to expand)
+- **Show code** — View the SQL query Genie generated
+- **Follow-up suggestions** — Related questions to explore further
+
+**Tips for Better Queries:**
+
+- Be specific about time periods: "for 2025", "last 6 months", "by academic term"
+- Ask about specific dimensions: "by flair", "by author", "by day of week"
+- Request comparisons: "compare Autumn Semester vs Spring Semester"
+- Ask for insights: "what can be driving it", "why is this happening"
 
 ### Deploy Agent
 
@@ -419,6 +489,18 @@ LIMIT 20;
 | Publish button disabled | Verify all required fields are filled and visualizations are valid |
 | Shared cache permissions error | Choose "Individual permissions" option instead of shared cache |
 | Dashboard not visible after publishing | Check access permissions and ensure users are added to the dashboard |
+| **Genie Space Deployment Issues** | |
+| Genie Code not finding warehouse | Ensure you have at least one SQL warehouse in your workspace; check **SQL Warehouses** page |
+| "GenieAPI object has no attribute" error | Genie Code will auto-fix this by using REST API directly; click **Accept** on suggested changes |
+| Genie Space not accessible after deploy | Click the **Open Genie Space** link in notebook output or navigate to **Genie** in sidebar |
+| Sharing dialog not showing users | Verify you have admin permissions; try searching for specific usernames or groups |
+| Genie Space queries timing out | Check warehouse size and state; ensure it's running and not in STOPPED state |
+| **Genie Query Issues** | |
+| Genie returns "no data found" | Verify tables have data; check catalog/schema references in Genie Space configuration |
+| Query results seem wrong | Click **Show code** to review generated SQL; refine your question with more specific terms |
+| Visualizations not appearing | Try clicking on the chart area or refresh; some complex queries may only show tables |
+| Follow-up questions not working | Start a new conversation thread; context may be lost after complex queries |
+| Genie misinterprets question | Use terminology from your data (e.g., "Academic Term", "Flair") rather than generic terms |
 
 ## License
 
