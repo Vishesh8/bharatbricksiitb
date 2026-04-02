@@ -1,21 +1,10 @@
 bundle:
-  name: iitb_campus_advisor
-
-variables:
-  catalog:
-    description: Unity Catalog name containing the data
-    default: "dbdemos_vishesh"
-  schema:
-    description: Schema name containing the tables
-    default: "bharat_bricks"
-  genie_space_id:
-    description: Genie Space ID for analytics
-    default: "01f1294bf4441d919d11ea6b4796f9da"
+  name: iitb_baap_agent
 
 resources:
   apps:
-    iitb_campus_advisor:
-      name: "iitb-campus-advisor"
+    iitb_baap_agent:
+      name: "iitb-baap-agent"
       description: "IIT Bombay Campus Advisor - Agentic RAG with Genie"
       source_code_path: ./
       config:
@@ -33,12 +22,6 @@ resources:
             value: "300"
           - name: MLFLOW_EXPERIMENT_ID
             value_from: "experiment"
-          - name: DATABRICKS_CATALOG
-            value: ${var.catalog}
-          - name: DATABRICKS_SCHEMA
-            value: ${var.schema}
-          - name: GENIE_SPACE_ID
-            value: ${var.genie_space_id}
 
       # Resources which this app has access to
       resources:
@@ -51,7 +34,7 @@ resources:
         # Vector Search Index (RAG)
         - name: 'posts_vector_index'
           uc_securable:
-            securable_full_name: '${var.catalog}.${var.schema}.gold_posts_vs_index'
+            securable_full_name: 'dbdemos_vishesh.bharat_bricks.gold_posts_vs_index'
             securable_type: 'TABLE'
             permission: 'SELECT'
 
@@ -59,7 +42,7 @@ resources:
         - name: 'iitb_genie'
           genie_space:
             name: 'IITB Junta Analytics'
-            space_id: '${var.genie_space_id}'
+            space_id: '01f1294bf4441d919d11ea6b4796f9da'
             permission: 'CAN_RUN'
 
 targets:
@@ -75,5 +58,5 @@ targets:
       host: https://e2-demo-field-eng.cloud.databricks.com
     resources:
       apps:
-        iitb_campus_advisor:
-          name: iitb-campus-advisor
+        iitb_baap_agent:
+          name: iitb-baap-agent
