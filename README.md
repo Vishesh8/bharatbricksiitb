@@ -129,7 +129,7 @@ Alternatively, you can also do below:
 
 **4.3: Create Git Folder**
 1. Navigate to **Workspace → Create → Git folder**
-2. Enter your repository URL in format: [`https://github.com/username/bharatbricksiitb-git.git`](https://github.com/Vishesh8/bharatbricksiitb)
+2. Enter your repository URL in format: [`https://github.com/Vishesh8/bharatbricksiitb-git.git`](https://github.com/Vishesh8/bharatbricksiitb)
 3. Click **Create Git folder**
 4. Your repository files will now be accessible in the Databricks workspace
 
