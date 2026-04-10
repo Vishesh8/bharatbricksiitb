@@ -352,7 +352,7 @@ Navigate to the Catalog to view the new gold tables:
 
 **Step 8: Configure Data Quality And Security Policies** ([visual guide](instructions/06-unity-catalog.pdf))
 
-> **Note**: This step is optional and for exploration purposes. Data classification and some advanced governance features may not be available in Databricks Free Edition.
+> **Note**: This step is optional and for exploration purposes. Data classification features may not be available in Databricks Free Edition.
 
 Implement Unity Catalog governance features including data quality monitoring, automated data classification, and security policies with column-level masking.
 
