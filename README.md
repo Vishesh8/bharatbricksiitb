@@ -239,6 +239,250 @@ To view sample data from the tables:
 4. The warehouse will start, and sample data will load automatically
 5. Explore the data structure and verify successful ingestion
 
+**Step 7: Run Data Transformation Pipeline With AI-Powered Cleansing** ([visual guide](instructions/05-data-transformation.pdf))
+
+Use Delta Live Tables (DLT) pipelines to transform raw data into silver and gold tables with AI-powered content moderation using Llama 3.1 8B for batch inferencing.
+
+**7.1: Create ETL Pipeline**
+
+1. In your Databricks workspace, click **Catalog** in the left sidebar (or navigate to **Jobs & Pipelines**)
+2. Click **Jobs & Pipelines** in the left sidebar
+3. Click **ETL pipeline** to create a new pipeline
+4. In the "Give your pipeline a name" field, type: `02-data-transformation`
+
+**7.2: Configure Pipeline Settings**
+
+1. Click **workspace** dropdown to select the target location
+2. Click **iitb** to select the catalog
+3. Click **Select schema**
+4. Click **bharat_bricks** to select the schema
+
+**7.3: Add Transformation Assets**
+
+1. Click **Add existing assets** under "Advanced options"
+2. In the "Pipeline root folder" section, click **Browse**
+3. Navigate to: **bharatbricksiitb → 02-data-transformation**
+4. Click **Select** to confirm the folder
+5. In the "Source code paths" section, click the folder icon
+6. Click **transformations** folder
+7. Click **Select** to add all transformation SQL files
+8. Click **Add** to finalize the pipeline configuration
+
+You should now see the pipeline with the following assets:
+- `gold_comments.sql`
+- `gold_posts.sql`
+- `gold_posts_chunked.sql`
+- `silver_comments.sql`
+- `silver_posts.sql`
+
+**7.4: Configure AI Model for Data Cleansing**
+
+Use Genie Code to switch from GPT-5 to Llama 3.1 8B for content moderation (compatible with Free Edition):
+
+1. Click **Genie Code** icon in the right sidebar
+2. In the chat input field, type:
+   ```
+   i want to use llama 3.1 8b for batch inferencing for cleansing raw data instead of gpt-5 as gpt-5 may not be available in the free edition
+   ```
+3. Press **Enter** to send the request
+4. When prompted for permissions:
+   - Click **Always allow in current thread** to streamline execution
+5. Review the proposed code changes in the assistant panel
+6. Click **Accept all** to apply the changes
+
+Genie Code will update the `silver_comments.sql` and `silver_posts.sql` files to use Llama 3.1 8B (`databricks-meta-llama-3-1-8b-instruct`) for AI-based content moderation.
+
+**7.5: Run the Pipeline**
+
+1. Click the **Run pipeline** dropdown (top right)
+2. Select **Run pipeline with full table refresh**
+3. In the confirmation dialog, click **Start full refresh**
+4. The pipeline will execute and create four tables:
+   - **silver_comments** — Cleansed comments with AI content moderation
+   - **silver_posts** — Cleansed posts with AI content moderation
+   - **gold_comments** — Final comment data (deleted/bot content removed)
+   - **gold_posts** — Final post data with content classification
+
+**7.6: Monitor Data Quality with Expectations**
+
+Delta Live Tables provides built-in data quality monitoring through expectations:
+
+1. Once the pipeline completes, navigate to the **Tables** tab at the bottom
+2. Click on **gold_posts** to view table metrics
+3. Click the **Expectations** count (e.g., "1 unmet")
+4. Review the **Expectations** panel showing:
+   - **Written**: Records that passed validation (e.g., 74.8% or 923 records)
+   - **Dropped**: Records that failed validation (e.g., 25.2% or 311 records)
+   - **Expectation details**: `is_clean_content` expectation with DROP action
+
+The `is_clean_content` expectation uses Llama 3.1 8B to classify comment/post body content and drops records containing profanity, slurs, discrimination, harassment, or hateful content.
+
+5. Click on **gold_comments** to view comment-level expectations
+6. Review expectations showing:
+   - **Written**: 61.4% (9,013 comments)
+   - **Dropped**: 38.6% (5,678 comments)
+
+**7.7: Verify Transformed Data**
+
+Navigate to the Catalog to view the new gold tables:
+
+1. Click **Catalog** in the left sidebar
+2. Expand: **iitb → bharat_bricks → Tables**
+3. You should now see 6 tables total:
+   - **comments** — Raw Reddit comments
+   - **posts** — Raw Reddit posts
+   - **gold_comments** — Cleansed, high-quality comments
+   - **gold_posts** — Cleansed, high-quality posts with content classification
+   - **silver_comments** — Intermediate transformed comments
+   - **silver_posts** — Intermediate transformed posts
+
+**7.8: Explore Gold Tables**
+
+1. Click on **gold_posts** table
+2. Click **Sample Data** tab
+3. Explore the new columns:
+   - `post_id` — Unique Reddit post identifier (e.g., "1ab1cj1")
+   - `title` — Post title
+   - `body` — Optional text body of the Reddit post
+   - All other metadata columns from the raw posts
+
+4. Click on **gold_comments** table
+5. Click **Sample Data** tab
+6. Explore the cleansed comment data with deleted/bot content removed
+
+**Step 8: Configure Data Quality And Security Policies** ([visual guide](instructions/06-unity-catalog.pdf))
+
+> **Note**: This step is optional and for exploration purposes. Data classification and some advanced governance features may not be available in Databricks Free Edition.
+
+Implement Unity Catalog governance features including data quality monitoring, automated data classification, and security policies with column-level masking.
+
+**8.1: Grant Table Permissions**
+
+1. Navigate to **Catalog** in the left sidebar
+2. Expand: **iitb → bharat_bricks → Tables**
+3. Click on **gold_posts** table
+4. Click the **Details** tab
+5. Click the **Permissions** tab
+6. Click the **Grant** button
+7. In the "Grant on iitb.bharat_bricks.gold_posts" dialog:
+   - **Principals**: Click the dropdown and select **All account users**
+   - **Privileges**: Select **ALL PRIVILEGES** (grants ownership-like ability for the object)
+8. Click **Confirm** to apply the permissions
+
+**8.2: Explore Data Lineage**
+
+1. Click the **Lineage** tab to view data lineage
+2. Click **See lineage graph** to visualize the complete data flow
+3. Explore the lineage graph showing:
+   - **Upstream sources**: `silver_posts` (streaming table)
+   - **Current table**: `gold_posts` (materialized view)
+   - **Downstream consumers**: Dashboards, pipelines, genie spaces, and notebooks
+4. Click on individual columns (e.g., **string**) to view column-level lineage
+5. Use the graph to understand data dependencies and transformation pipelines
+
+**8.3: Enable Data Quality Monitoring**
+
+1. Click the **Insights** tab to view table insights
+2. Click the **Quality** tab
+3. Click **Enable** to activate Data Quality Monitoring
+4. In the "Data Quality Monitoring" dialog:
+   - Click **Configure for schema** to enable monitoring for all tables in the schema
+5. Click **Save** to confirm
+
+Unity Catalog will now:
+- Automatically monitor freshness and completeness of all tables
+- Use intelligent scanning to stay efficient and keep insights current
+- Track table usage over the last 30 days
+- Monitor frequent users, dashboards, notebooks, and queries
+
+**8.4: AI-Generate Column Descriptions**
+
+1. Navigate back to the **Details** tab
+2. Scroll down to the **Description** section
+3. Click **AI generate** button next to "Filter columns"
+4. AI will automatically generate descriptions for all columns based on:
+   - Column names and data types
+   - Sample data and patterns
+   - Table context and relationships
+5. Review the generated descriptions for accuracy
+6. Click **Save all** to apply all generated descriptions
+
+Example generated descriptions:
+- `comment_id`: Unique Reddit comment identifier (e.g., n61c7w1). Primary key.
+- `post_id`: ID of the parent post this comment belongs to. Foreign key referencing posts.post_id.
+- `parent_id`: Reddit thing ID of the parent (post or comment) (e.g. t3_1cawss)
+
+**8.5: Create Data Masking Policies**
+
+1. Click the **Policies** tab to view and create security policies
+2. Click **New policy** to create a row-level or column masking policy
+3. In the "New policy" dialog, configure the following:
+
+**Purpose — Select masking type:**
+- Select **Mask column data** (columns must have all selected tags to be masked)
+- Deselect **Hide table rows** (restrict access to individual rows based on content)
+
+**Conditions — Select masking function:**
+- Click **Select existing** dropdown
+- Choose **Serverless Starter Warehouse** (or your preferred compute)
+- Under "Custom condition", click **Select function** to define masking behavior
+- Example functions:
+  - **Mask with asterisks**: Replace all characters with `*` (e.g., `john@example.com` → `****************`)
+  - **Show first and last characters**: Show first 2 and last 4 characters (e.g., `1234-5678-9012-3456` → `12**-****-****-3456`)
+  - **Redact email addresses**: Replace email with `***@***.***`
+
+**Conditions — Select tag for masking:**
+- Click the tag dropdown to select which columns should be masked
+- Choose **class.us_bank_number** (tags columns containing US bank account numbers)
+- Only columns with this specific tag will be masked
+
+**General — Apply to principals:**
+- **Applied to**: Click dropdown and select **All account users**
+- **Except for**: Click dropdown and select specific users/groups to exempt (e.g., `user_9505fc852`)
+
+4. Review the auto-generated policy code in the **Policy code (SQL)** panel
+5. Click **Create** to activate the masking policy
+
+**8.6: Enable Automated Data Classification**
+
+1. Navigate to **Catalog** in the left sidebar
+2. Click on the **iitb** catalog
+3. Click the **Details** tab
+4. Scroll down to the **Advanced** section
+5. Locate **Data Classification** and click **Enable**
+
+Unity Catalog will now:
+- Automatically scan tables in the catalog and tag columns containing sensitive data
+- Identify and classify PII (Personally Identifiable Information)
+- Apply tags like `class.email`, `class.ssn`, `class.credit_card_number`, `class.us_bank_number`
+- Enable automated policy enforcement based on classification tags
+
+**8.7: Monitor Data Quality Results**
+
+1. Navigate to **Catalog** in the left sidebar
+2. Expand: **iitb → bharat_bricks**
+3. Click on the **bharat_bricks** schema
+4. Click the **Details** tab
+5. Scroll down to **Advanced → Data Quality Monitoring**
+6. Click **View results** to open the Data Quality Monitoring dashboard
+
+The dashboard displays:
+- **Data Quality**: Overall health score (e.g., 100% healthy)
+- **Tables Monitored**: Number of tables being monitored (e.g., 7 tables)
+- **All Monitored Tables**: Detailed view with columns:
+  - **Schema**: Schema name (e.g., `bharat_bricks`)
+  - **Table**: Table name (e.g., `gold_comments`, `gold_posts`)
+  - **Status**: Training state (green dot = Training, yellow dot = Healthy, red dot = Error)
+  - **Last Scanned**: Timestamp of most recent scan (e.g., "17 minutes ago")
+  - **Impact**: Usage frequency (Low, Medium, High)
+  - **Scan Frequency**: Monitoring cadence (e.g., "Every 1 week")
+  - **Results**: Click **Review** to view detailed quality metrics
+
+7. Click **Review** on any table to view:
+   - Anomaly detection results
+   - Freshness metrics (data recency)
+   - Completeness metrics (null values, missing data)
+   - Volume metrics (row counts over time)
 
 ---
 
