@@ -116,7 +116,7 @@ In Databricks: **Catalog → iitb → bharat_bricks → data → Upload to this 
 1. Go to GitHub.com and log in to your account
 2. Navigate to **Settings → Developer settings → Personal access tokens → Tokens (classic)**
 3. Click **Generate new token**
-4. Set expiration and select **repo** scope (full repository access)
+4. Set expiration and select all on **repo** and **project** scope (full repository access)
 5. Copy the generated token (you won't see it again!)
 
 Alternatively, you can also do below:
@@ -136,7 +136,7 @@ Alternatively, you can also do below:
 **Step 5: Navigate to Your Git Folder**
 
 After creating the Git folder, navigate to it in your Databricks workspace:
-1. Go to **Workspace → Repos → bharatbricksiitb-git** (or your repository name)
+1. Go to **Workspace → bharatbricksiitb-git** (or your repository name)
 2. You should see all project files and folders available
 3. Click on notebooks to open them directly in Databricks
 
