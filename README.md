@@ -53,6 +53,7 @@ End-to-end data + AI pipeline analyzing the r/iitbombay subreddit — IIT Bombay
 > - [1-register-databricks-free-account.pdf](instructions/1-register-databricks-free-account.pdf) — Sign up for Databricks Free Edition
 > - [2-catalog-data-setup.pdf](instructions/2-catalog-data-setup.pdf) — Create catalog, schema, volume & upload data
 > - [3-create-git-folder.pdf](instructions/3-create-git-folder.pdf) — Connect GitHub repo to Databricks workspace
+> - [4-data-ingestion.pdf](instructions/4-data-ingestion.pdf) — Run data ingestion notebooks using AI assistant
 
 ### Quick Start
 
@@ -65,22 +66,49 @@ If you don't have one, sign up for [Databricks Free Edition](https://www.databri
 
 **Step 2: Create Catalog, Schema & Volume** ([visual guide](instructions/2-catalog-data-setup.pdf))
 
-In Databricks SQL Editor, run:
+**2.1: Open SQL Editor**
 
-```sql
-CREATE CATALOG IF NOT EXISTS iitb;
-CREATE SCHEMA IF NOT EXISTS iitb.bharat_bricks;
-```
+1. In your Databricks workspace, click **SQL Editor** in the left sidebar
+2. Click **SQL Query** to create a new query
 
-Then create a volume via Catalog UI: **Catalog → iitb → bharat_bricks → Create → Volume** (name it `data`).
+**2.2: Create Catalog and Schema**
+
+1. In the SQL Editor, paste the following commands:
+   ```sql
+   CREATE CATALOG IF NOT EXISTS iitb;
+   CREATE SCHEMA IF NOT EXISTS iitb.bharat_bricks;
+   ```
+2. Highlight the SQL statements if needed
+3. Click **Run selected** to execute the queries
+4. Verify successful execution in the output panel
+
+**2.3: Create Volume**
+
+1. Navigate to **Catalog** in the left sidebar
+2. Expand the catalog tree: click **iitb**
+3. Click on **bharat_bricks** schema
+4. Click the **Create** dropdown button (top right)
+5. Select **Volume** from the menu
+6. In the "Create a new volume" dialog:
+   - **Volume name**: Enter `data`
+   - **Volume type**: Select **Managed volume** (default, radio button selected)
+   - **Choose catalog and schema**: Verify `iitb` and `bharat_bricks` are selected
+7. Click **Create**
 
 **Step 3: Upload Raw Data** ([visual guide](instructions/2-catalog-data-setup.pdf))
 
-Upload the JSON files from [`raw_data/`](raw_data/) to your volume:
-- `iitbombay_posts.json` → `/Volumes/iitb/bharat_bricks/data/`
-- `iitbombay_comments.json` → `/Volumes/iitb/bharat_bricks/data/`
-
-In Databricks: **Catalog → iitb → bharat_bricks → data → Upload to this volume**
+1. In the Catalog view, navigate to the volume you just created:
+   - Expand: **Catalog → iitb → bharat_bricks → data**
+2. Click on the **data** volume to open it
+3. Click **Upload to this volume** button (top right)
+4. In the "Upload files to a Volume in Unity Catalog" dialog:
+   - Either drag and drop files from your local `raw_data/` folder into the drop zone, or
+   - Click **browse** (or **Select files**) to choose files manually
+5. Select both JSON files from the [`raw_data/`](raw_data/) folder:
+   - `iitbombay_posts.json`
+   - `iitbombay_comments.json`
+6. Click **Upload** to start the upload process
+7. Wait for the upload to complete — you should see both files listed in the volume with their file sizes
 
 **Step 4: Connect Git Repository** ([visual guide](instructions/3-create-git-folder.pdf))
 
@@ -135,6 +163,81 @@ After creating the Git folder, navigate to it in your Databricks workspace:
 1. Go to **Workspace → bharatbricksiitb-git** (or your repository name)
 2. You should see all project files and folders available
 3. Click on notebooks to open them directly in Databricks
+
+**Step 6: Run Data Ingestion Using AI Assistant** ([visual guide](instructions/4-data-ingestion.pdf))
+
+Use Genie Code (AI assistant) to automatically run the data ingestion notebook for your catalog and schema.
+
+**6.1: Open the Data Ingestion Notebook**
+
+1. In your Databricks workspace, click **Workspace** in the left sidebar
+2. Navigate to your Git folder: **bharatbricksiitb** (or your repository name)
+3. Click on the **01-data-ingestion** notebook to open it
+4. The notebook will display the data ingestion pipeline architecture and configuration
+
+**6.2: Use AI Assistant to Run the Notebook**
+
+1. Look for the **Genie Code** icon in the right sidebar of the notebook
+2. Click the Genie Code icon to open the AI assistant panel
+3. In the chat input field, type your request:
+   ```
+   i want to run this data ingestion notebook for my catalog (iitb) and schema (bharat_bricks)
+   ```
+4. Press **Enter** to send the request
+
+**6.3: Grant Permissions**
+
+1. Genie Code will analyze the notebook and prepare to execute it
+2. A permission dialog will appear: **"Ask every time"** or **"Always allow in current thread"**
+3. Click **Always allow in current thread** to streamline future requests
+4. Review the proposed changes in the assistant panel
+5. Click **Accept all** to proceed with notebook execution
+
+**6.4: Monitor Execution and View Results**
+
+The AI assistant will:
+- Update the configuration cells with your catalog and schema names
+- Execute all cells in the notebook sequentially
+- Display progress and execution results
+
+You'll see output similar to:
+```
+Data Ingested:
+• 1,339 posts from r/iitbombay → iitb.bharat_bricks.posts
+• 16,790 comments → iitb.bharat_bricks.comments
+• Average of 12.5 comments per post
+
+Pipeline Features Activated:
+• Auto Loader configured for incremental JSON processing
+• Primary keys and foreign key constraints established
+• Change Data Feed enabled for downstream incremental reads
+• Comprehensive table and column documentation added
+```
+
+**6.5: Verify Data in Catalog**
+
+1. Navigate to **Catalog** in the left sidebar
+2. Expand the catalog tree: **iitb → bharat_bricks → Tables (2)**
+3. You should see two new tables:
+   - **comments** — Reddit comment data with threading structure
+   - **posts** — Reddit post submissions with metadata
+4. Click on either table to view:
+   - **Overview**: Table description and metadata
+   - **Sample Data**: Preview rows (requires SQL warehouse)
+   - **Details**: Schema, constraints, and column descriptions
+   - **Permissions**: Access control settings
+
+**6.6: Query Sample Data (Optional)**
+
+To view sample data from the tables:
+1. Click on a table (e.g., **comments** or **posts**)
+2. Click the **Sample Data** tab
+3. If prompted to **Select compute**:
+   - Click **Select compute**
+   - Choose **Serverless Starter Warehouse**
+   - Click **Start and Close**
+4. The warehouse will start, and sample data will load automatically
+5. Explore the data structure and verify successful ingestion
 
 
 ---
