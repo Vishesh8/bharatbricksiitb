@@ -4,7 +4,7 @@ End-to-end data + AI pipeline analyzing the r/iitbombay subreddit — IIT Bombay
 
 ## Architecture
 
-<img width="2709" height="2158" alt="image" src="https://github.com/user-attachments/assets/e947de78-b572-4d84-8c7e-60e9fee0df9b" />
+<img width="2709" height="2158" alt="image" src="https://github.com/user-attachments/assets/a0c3689c-9921-40c7-a20d-244e5248cef6" />
 
 
 ## Contents
