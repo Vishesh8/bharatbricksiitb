@@ -104,7 +104,7 @@ Then create a volume via Catalog UI: **Catalog → iitb → bharat_bricks → Cr
 
 **Step 3: Upload Raw Data** ([visual guide](instructions/2-catalog-data-setup.pdf))
 
-Upload the JSON files from `raw_data/` to your volume:
+Upload the JSON files from [`raw_data/`](raw_data/) to your volume:
 - `iitbombay_posts.json` → `/Volumes/iitb/bharat_bricks/data/`
 - `iitbombay_comments.json` → `/Volumes/iitb/bharat_bricks/data/`
 
