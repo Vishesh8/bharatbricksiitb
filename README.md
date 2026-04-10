@@ -53,12 +53,6 @@ End-to-end data + AI pipeline analyzing the r/iitbombay subreddit — IIT Bombay
 > - [1-register-databricks-free-account.pdf](instructions/1-register-databricks-free-account.pdf) — Sign up for Databricks Free Edition
 > - [2-catalog-data-setup.pdf](instructions/2-catalog-data-setup.pdf) — Create catalog, schema, volume & upload data
 > - [3-create-git-folder.pdf](instructions/3-create-git-folder.pdf) — Connect GitHub repo to Databricks workspace
-> - [4-ingest-data-maange-assets.pdf](instructions/4-ingest-data-maange-assets.pdf) — Data ingestion, permissions, security policies & quality monitoring
-> - [5-creating-etl-pipelines.pdf](instructions/5-creating-etl-pipelines.pdf) — UI-based ETL pipeline creation with AI Gateway & event logging
-> - [6-create-dashboard.pdf](instructions/6-create-dashboard.pdf) — Dashboard creation via Databricks UI with visualization widgets
-> - [7-create-metric-view.pdf](instructions/7-create-metric-view.pdf) — Creating metric views using Genie Code and UI navigation
-> - [8-create-genie-space.pdf](instructions/8-create-genie-space.pdf) — Deploy Genie Space via notebook with Genie Code assistance
-> - [9-use-genie-space.pdf](instructions/9-use-genie-space.pdf) — Query subreddit data using natural language in Genie
 
 ### Quick Start
 
