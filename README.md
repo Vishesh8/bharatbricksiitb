@@ -15,12 +15,6 @@ End-to-end data + AI pipeline analyzing the r/iitbombay subreddit — IIT Bombay
 | ↳ `1-register-databricks-free-account.pdf` | Sign up for Databricks Free Edition |
 | ↳ `2-catalog-data-setup.pdf` | Create catalog, schema, volume & upload data |
 | ↳ `3-create-git-folder.pdf` | Connect GitHub repo to Databricks workspace |
-| ↳ `4-ingest-data-maange-assets.pdf` | Data ingestion, permissions, security policies & quality monitoring |
-| ↳ `5-creating-etl-pipelines.pdf` | UI-based ETL pipeline creation with AI Gateway & event logging |
-| ↳ `6-create-dashboard.pdf` | Dashboard creation via Databricks UI with visualization widgets |
-| ↳ `7-create-metric-view.pdf` | Creating metric views using Genie Code and UI navigation |
-| ↳ `8-create-genie-space.pdf` | Deploy Genie Space via notebook with Genie Code assistance |
-| ↳ `9-use-genie-space.pdf` | Query subreddit data using natural language in Genie |
 | `raw_data/` | Source JSON files (~1,300 posts, ~17K comments) |
 | `01-data-ingestion.ipynb` | Auto Loader pipeline → `posts` and `comments` tables |
 | `02-data-transformation/` | SQL transforms: silver_posts, silver_comments, gold_posts, gold_comments |
