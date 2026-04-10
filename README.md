@@ -4,23 +4,8 @@ End-to-end data + AI pipeline analyzing the r/iitbombay subreddit — IIT Bombay
 
 ## Architecture
 
-```
-raw_data/               JSON files from Reddit API
-    │
-    ▼
-01-data-ingestion       Auto Loader → bronze tables (posts, comments)
-    │
-    ▼
-02-data-transformation  SQL transforms → silver → gold tables
-    │
-    ▼
-03-metric-view          YAML metric view (iitb_subreddit_metrics)
-    │
-    ├───────────────────┬───────────────────┐
-    ▼                   ▼                   ▼
-04-dashboard        05-genie-space      06-agent
-(Lakeview)          (AI/BI Chat)        (Responses API)
-```
+<img width="2709" height="2158" alt="image" src="https://github.com/user-attachments/assets/e947de78-b572-4d84-8c7e-60e9fee0df9b" />
+
 
 ## Contents
 
