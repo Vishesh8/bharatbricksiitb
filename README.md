@@ -85,25 +85,49 @@ In Databricks: **Catalog → iitb → bharat_bricks → data → Upload to this 
 **Step 4: Connect Git Repository** ([visual guide](instructions/3-create-git-folder.pdf))
 
 **4.1: Generate GitHub Personal Access Token**
-1. Go to GitHub.com and log in to your account
-2. Navigate to **Settings → Developer settings → Personal access tokens → Tokens (classic)**
-3. Click **Generate new token**
-4. Set expiration and select all on **repo** and **project** scope (full repository access)
-5. Copy the generated token (you won't see it again!)
 
-Alternatively, you can also do below:
+1. Navigate to https://github.com/settings/tokens or:
+   - Go to GitHub.com and log in
+   - Click your profile icon (top right) → **Settings**
+   - Select **Developer settings** from the left sidebar
+2. Click **Personal access tokens** → **Tokens (classic)**
+3. Click **Generate new token** dropdown → **Generate new token (classic)**
+4. Fill in the token details:
+   - **Note**: Enter a descriptive name (e.g., "databricks-workshop")
+   - **Expiration**: Choose expiration period (30 days recommended)
+   - **Scopes**: Select the following checkboxes:
+     - ☑ **repo** (full control of private repositories)
+     - ☑ **project** (full control of projects)
+5. Scroll down and click **Generate token**
+6. **Important**: Copy the generated token immediately — you won't be able to see it again!
 
 **4.2: Add Git Credentials in Databricks**
-1. In your Databricks workspace, click on your profile icon (top right)
-2. Select **Settings → Linked accounts → Add Git credential**
-3. Choose **Personal access token** as authentication method
-4. Paste your GitHub token and save
+
+1. In your Databricks workspace, click your profile icon (top right)
+2. Select **Settings** from the dropdown menu
+3. Navigate to **Linked accounts** in the left sidebar
+4. Click **Add Git credential** button
+5. In the "Add Git credential" dialog:
+   - **Git provider**: Select **GitHub** from the dropdown
+   - **Authentication method**: Click **Personal access token** radio button
+   - **Nickname**: Will auto-populate (e.g., "GitHub 2026-04-10 14:03:09")
+   - **Git provider email (optional)**: Enter your GitHub email address
+   - **Token**: Paste the personal access token you copied earlier
+6. Click **Save**
 
 **4.3: Create Git Folder**
-1. Navigate to **Workspace → Create → Git folder**
-2. Enter your repository URL in format: [`https://github.com/Vishesh8/bharatbricksiitb-git.git`](https://github.com/Vishesh8/bharatbricksiitb)
-3. Click **Create Git folder**
-4. Your repository files will now be accessible in the Databricks workspace
+
+1. Navigate to **Workspace** in the left sidebar
+2. Click the **Create** dropdown (or use the **+** button)
+3. Select **Git folder** from the menu
+4. In the "Create Git folder" dialog:
+   - **Git repository URL**: Enter your repository URL
+     - Format: `https://github.com/YOUR-USERNAME/bharatbricksiitb.git`
+     - Example: `https://github.com/Vishesh8/bharatbricksiitb.git`
+   - **Git provider**: GitHub (auto-selected)
+   - **Git folder name**: Will auto-populate from repository name
+5. Click **Create Git folder**
+6. Your repository files will now be accessible in the Databricks workspace under the Git folder
 
 **Step 5: Navigate to Your Git Folder**
 
