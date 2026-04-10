@@ -484,6 +484,156 @@ The dashboard displays:
    - Completeness metrics (null values, missing data)
    - Volume metrics (row counts over time)
 
+**Step 9: Create Metric View for Analytics** ([visual guide](instructions/07-metric-view.pdf))
+
+Create a unified metric view that consolidates r/iitbombay subreddit analytics with dimensions and measures for dashboards, AI/BI (Genie) spaces, and SQL queries.
+
+**9.1: Open the Metric View Notebook**
+
+1. In your Databricks workspace, click **Workspace** in the left sidebar
+2. Navigate to your Git folder: **bharatbricksiitb** (or your repository name)
+3. Click on the **03-metric-view** notebook to open it
+4. The notebook will display the metric view configuration and SQL definition
+
+**9.2: Use AI Assistant to Create the Metric View**
+
+1. Look for the **Genie Code** icon in the right sidebar of the notebook
+2. Click the Genie Code icon to open the AI assistant panel
+3. In the chat input field, type your request:
+   ```
+   create this metric view for catalog "iitb" and schema "bharat_bricks"
+   ```
+4. Press **Enter** to send the request
+
+**9.3: Grant Permissions**
+
+1. Genie Code will analyze the notebook and prepare to execute it
+2. A permission dialog will appear: **"Ask every time"** or **"Always allow in current thread"**
+3. Click **Always allow in current thread** to streamline future requests
+4. Review the proposed changes in the assistant panel
+5. Click **Run** to execute the notebook cells
+6. Click **Accept all** to proceed with metric view creation
+
+**9.4: Verify Metric View Creation**
+
+The AI assistant will:
+- Update the configuration cells with your catalog and schema names
+- Execute the SQL DDL to create the metric view
+- Display success confirmation
+
+You'll see output similar to:
+```
+Perfect! I've successfully created the metric view iitb.bharat_bricks.iitb_subreddit_metrics.
+
+This metric view consolidates r/iitbombay subreddit analytics with:
+
+Dimensions: Post date, month, year, academic term (semester), flair, content type, author, and author affiliation
+
+Measures: Total posts, total comments, average post score, average comments per post, high engagement posts, high engagement rate, and unique authors
+```
+
+**9.5: Explore the Metric View in Catalog**
+
+1. Navigate to **Catalog** in the left sidebar
+2. Expand the catalog tree: **iitb → bharat_bricks → Tables**
+3. Click on **iitb_subreddit_metrics** to open the metric view
+4. Click the **Details** tab to view the metric view definition
+5. Scroll down to see:
+   - **Measures (7)**: Total Posts, Total Comments, Avg Post Score, Avg Comments per Post, High Engagement Posts, High Engagement Rate, Unique Authors
+   - **Dimensions (8)**: Post Date, Post Month, Post Year, Academic Term, Flair, Content Type, Author, Author Affiliation
+
+**9.6: View Data Lineage**
+
+1. Click the **Lineage** tab to view upstream dependencies
+2. Click **See lineage graph** to visualize the complete data flow
+3. Explore the lineage graph showing:
+   - **Upstream sources**: `gold_posts` and `gold_comments` (materialized views)
+   - **Current metric view**: `iitb_subreddit_metrics` (metric view)
+   - **Potential downstream consumers**: Dashboards, Genie spaces, notebooks, and SQL queries
+4. The lineage graph shows how the metric view aggregates data from the cleansed gold tables
+
+**Step 10: Create AI/BI Dashboard with Genie Code** ([visual guide](instructions/08-ai-bi-dashboards.pdf))
+
+Use Genie Code to automatically create interactive dashboards that explore student life at IIT Bombay based on your gold tables and metric view.
+
+**10.1: Navigate to Dashboards**
+
+1. In your Databricks workspace, click **Dashboards** in the left sidebar
+2. Click the **Create dashboard** button (or the **+** icon)
+3. Select **Create dashboard** from the dropdown menu
+
+**10.2: Create Dashboard with Genie Code**
+
+1. In the new dashboard view, click the **Genie Code** icon in the right sidebar
+2. In the Genie Code input box, type your request:
+   ```
+   do in depth analysis of gold tables and metric view inside this schema - iitb.bharat_bricks and then create a dashboard exploring student's lives at iit bombay
+   ```
+3. Press **Enter** to send the request
+
+**10.3: Grant Permissions**
+
+1. A permission dialog will appear: **"Ask every time"** or **"Always allow in current thread"**
+2. Click **Always allow in current thread** to streamline dashboard creation
+3. Genie Code will analyze the schema and create initial visualizations
+4. When prompted again for permissions, click **Always allow in current thread**
+
+**10.4: Refine Dashboard Organization**
+
+Genie Code will create a comprehensive dashboard with multiple visualizations. To improve organization:
+
+1. In the Genie Code input box, type:
+   ```
+   let's create different tabs for different sections
+
+   also, there are a lot of untagged and unknown categories. let's filter those out
+   ```
+2. Press **Enter** and review the proposed changes
+3. Next, type to improve layout:
+   ```
+   move heading markdowns to the top on all tabs
+   ```
+4. Press **Enter** to apply the changes
+
+**10.5: Explore Dashboard Tabs**
+
+The dashboard will be organized into multiple tabs, each focusing on different aspects of student life:
+
+1. **Overview** — Dashboard summary with key metrics:
+   - Total Posts, Total Comments, Active Community Members, High Engagement Rate
+   - Student Activity Over Time (time series visualization)
+   - Discussion Topics (by Flair) — bar chart showing topic distribution
+   - Content Type Distribution — pie chart showing text posts vs. links/images/videos/galleries
+   - Engagement Trends — line chart showing activity patterns
+
+2. **Topics & Content** — Discussion topics analysis:
+   - Posts by Year — bar chart showing posting trends over time
+   - Discussion Topics (by Flair) — detailed breakdown of conversation topics
+   - Content Type Distribution — visualization of content format preferences
+   - High Engagement Posts by Topic — identifying which topics generate most discussion
+
+3. **Community** — Student communities and engagement:
+   - Engagement by Student Communities — bar chart showing participation by affiliation
+   - Author Affiliation distribution
+   - Community activity patterns and trends
+   - Active contributors and community dynamics
+
+4. **Popular Posts** — Most engaging content:
+   - Table of most popular posts with titles, scores, and comment counts
+   - Engagement by Student Communities — comparing post counts and average scores
+   - High-engagement content analysis
+   - Popular discussion threads
+
+**10.6: Customize and Publish**
+
+1. Click on any visualization to customize:
+   - Edit queries, change chart types, adjust colors
+   - Add filters to focus on specific time periods or topics
+   - Modify axis labels and formatting
+2. Click **Publish** (top right) to save and share the dashboard
+3. Enter a dashboard name: `IIT Bombay Student Life Explorer` (or your preferred name)
+4. Click **Publish** to make the dashboard available to your team
+
 ---
 
 **Questions?** Open an issue or reach out during the workshop!
