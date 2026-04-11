@@ -26,9 +26,9 @@ def get_user_workspace_client() -> WorkspaceClient:
     return WorkspaceClient(token=token, auth_type="pat")
 
 
-def get_databricks_host_from_env() -> Optional[str]:
+def get_databricks_host_from_env(workspace_client: WorkspaceClient = None) -> Optional[str]:
     try:
-        w = WorkspaceClient()
+        w = workspace_client or WorkspaceClient()
         return w.config.host
     except Exception as e:
         logging.exception(f"Error getting databricks host from env: {e}")

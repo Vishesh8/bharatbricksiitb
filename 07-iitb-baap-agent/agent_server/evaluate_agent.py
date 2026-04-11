@@ -20,32 +20,42 @@ from mlflow.genai.scorers import (
 from mlflow.genai.simulators import ConversationSimulator
 from mlflow.types.responses import ResponsesAgentRequest
 
-# Load environment variables from .env if it exists
 load_dotenv(dotenv_path=".env", override=True)
 logging.getLogger("mlflow.utils.autologging_utils").setLevel(logging.ERROR)
 
-# need to import agent for our @invoke-registered function to be found
-from agent_server import agent  # noqa: F401
+from agent_server import agent  # noqa: F401, E402
 
-# Create your evaluation dataset
-# Refer to documentation for evaluations:
-# Scorers: https://docs.databricks.com/aws/en/mlflow3/genai/eval-monitor/concepts/scorers
-# Predefined LLM scorers: https://mlflow.org/docs/latest/genai/eval-monitor/scorers/llm-judge/predefined
-# Defining custom scorers: https://docs.databricks.com/aws/en/mlflow3/genai/eval-monitor/custom-scorers
 test_cases = [
     {
-        "goal": "Learn about the main dishes of Vietnamese cuisine",
-        "persona": "An impatient foodie who doesn't know much about Vietnamese cuisine.",
+        "goal": "Find out what students think about hostel food quality at IIT Bombay",
+        "persona": "A JEE aspirant who just got their rank and is deciding between IITs.",
         "simulation_guidelines": [
-            "Initially explore the main influences of Vietnamese cuisine before the main dishes.",
+            "Ask about mess food quality first, then ask about alternatives on campus.",
+            "Prefer short messages",
         ],
     },
     {
-        "goal": "Figure out which prime numbers between 1 and 50 are also Fibonacci numbers",
-        "persona": "You are a math novice who has heard of prime numbers but doesn't know what Fibonacci numbers are.",
+        "goal": "Understand the placement scene for CS students at IIT Bombay",
+        "persona": "A second-year student considering switching branches to CS.",
         "simulation_guidelines": [
-            "Initially ask questions to understand the Fibonacci sequence before exploring which ones are prime.",
-            "Prefer short messages",
+            "Ask about average packages first, then ask about the preparation process.",
+            "Use casual language",
+        ],
+    },
+    {
+        "goal": "Learn about campus culture, fests, and student life at IIT Bombay",
+        "persona": "A freshie who just joined and wants to know how to make the most of insti life.",
+        "simulation_guidelines": [
+            "Ask about the major fests first, then about clubs and extracurriculars.",
+            "Ask follow-up questions about how to get involved",
+        ],
+    },
+    {
+        "goal": "Get advice on how to handle academic pressure and avoid getting an FR",
+        "persona": "A struggling sophomore who is worried about their GPA.",
+        "simulation_guidelines": [
+            "Express anxiety about upcoming exams, then ask for study strategies.",
+            "Ask about what happens if you get an FR",
         ],
     },
 ]
@@ -56,16 +66,12 @@ simulator = ConversationSimulator(
     user_model=f"databricks:/{MODEL_ENDPOINT}",
 )
 
-# Get the invoke function that was registered via @invoke decorator in your agent
 invoke_fn = get_invoke_function()
 assert invoke_fn is not None, (
-    "No function registered with the `@invoke` decorator found."
+    "No function registered with the `@invoke` decorator found. "
     "Ensure you have a function decorated with `@invoke()`."
 )
 
-# if invoke function is async, wrap it in a sync function.
-# The simulator may already be running an event loop, so we use nest_asyncio
-# to allow nested run_until_complete() calls without deadlocking.
 if asyncio.iscoroutinefunction(invoke_fn):
     import nest_asyncio
 

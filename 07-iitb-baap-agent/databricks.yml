@@ -3,7 +3,10 @@ bundle:
 
 sync:
   exclude:
-    - e2e-chatbot-app-next/
+    - e2e-chatbot-app-next/node_modules/
+    - e2e-chatbot-app-next/**/node_modules/
+    - e2e-chatbot-app-next/**/dist/
+    - e2e-chatbot-app-next/**/.next/
     - .venv/
     - __pycache__/
     - "*.pyc"
@@ -42,11 +45,7 @@ resources:
           - name: VECTOR_SEARCH_INDEX
             value: "iitb.bharat_bricks.vs_gold_posts_index"
           - name: MODEL_ENDPOINT
-            value: "databricks-meta-llama-3-3-70b-instruct"
-          - name: PROMPT_NAME
-            value: "iitb_lingo_prompt"
-          - name: PROMPT_ALIAS
-            value: "production"
+            value: "databricks-qwen3-next-80b-a3b-instruct"
 
       # Resources which this app has access to
       resources:
@@ -69,6 +68,12 @@ resources:
             name: 'IITB Junta Analytics'
             space_id: '01f135a25c7a1f63b039f802c37eaf5e'
             permission: 'CAN_RUN'
+
+        # NOTE: MLflow Prompt Registry requires CREATE_FUNCTION, EXECUTE, and
+        # MANAGE on the schema. These cannot be granted via bundle resources
+        # (only FUNCTION/TABLE/VOLUME securables are supported). Grant manually:
+        #   databricks grants update schema iitb.bharat_bricks \
+        #     --json '{"changes":[{"principal":"<app-sp>","add":["EXECUTE","CREATE_FUNCTION"]}]}'
 
 targets:
   dev:

@@ -32,14 +32,4 @@ VECTOR_SEARCH_INDEX = os.getenv(
 # =============================================================================
 # Model Endpoint
 # =============================================================================
-MODEL_ENDPOINT = os.getenv("MODEL_ENDPOINT", "databricks-meta-llama-3-3-70b-instruct")
-
-# =============================================================================
-# Prompt Registry
-# =============================================================================
-PROMPT_NAME = os.getenv("PROMPT_NAME", "iitb_lingo_prompt")
-PROMPT_ALIAS = os.getenv("PROMPT_ALIAS", "production")
-# URI format: prompts:/catalog.schema.prompt_name@alias (dots in the name!)
-PROMPT_REGISTRY_URI = os.getenv(
-    "PROMPT_REGISTRY_URI", f"prompts:/{CATALOG}.{SCHEMA}.{PROMPT_NAME}@{PROMPT_ALIAS}"
-)
+MODEL_ENDPOINT = os.getenv("MODEL_ENDPOINT", "databricks-qwen3-next-80b-a3b-instruct")

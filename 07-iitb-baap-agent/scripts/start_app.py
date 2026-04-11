@@ -15,6 +15,7 @@ See 'uv run start-server --help' for available options.
 """
 
 import argparse
+import hashlib
 import os
 import re
 import shutil
@@ -134,6 +135,26 @@ class ProcessManager:
             print(f"Error monitoring {name}: {e}")
             self.failed.set()
 
+    @staticmethod
+    def _hash_lockfile(frontend_dir: Path) -> str:
+        lockfile = frontend_dir / "package-lock.json"
+        if not lockfile.exists():
+            return ""
+        return hashlib.sha256(lockfile.read_bytes()).hexdigest()
+
+    @staticmethod
+    def _frontend_build_up_to_date(frontend_dir: Path) -> bool:
+        sentinel = frontend_dir / ".build_hash"
+        if not sentinel.exists() or not (frontend_dir / "node_modules").exists():
+            return False
+        current = ProcessManager._hash_lockfile(frontend_dir)
+        return sentinel.read_text().strip() == current
+
+    @staticmethod
+    def _write_build_hash(frontend_dir: Path) -> None:
+        sentinel = frontend_dir / ".build_hash"
+        sentinel.write_text(ProcessManager._hash_lockfile(frontend_dir))
+
     def clone_frontend_if_needed(self):
         if Path("e2e-chatbot-app-next").exists():
             return True
@@ -238,16 +259,19 @@ class ProcessManager:
             )
 
             if not self.no_ui:
-                # Setup and start frontend
                 frontend_dir = Path("e2e-chatbot-app-next")
-                for cmd, desc in [("npm install", "install"), ("npm run build", "build")]:
-                    print(f"Running npm {desc}...")
-                    result = subprocess.run(
-                        cmd.split(), cwd=frontend_dir, capture_output=True, text=True
-                    )
-                    if result.returncode != 0:
-                        print(f"npm {desc} failed: {result.stderr}")
-                        return 1
+                if not self._frontend_build_up_to_date(frontend_dir):
+                    for cmd, desc in [("npm install", "install"), ("npm run build", "build")]:
+                        print(f"Running npm {desc}...")
+                        result = subprocess.run(
+                            cmd.split(), cwd=frontend_dir, capture_output=True, text=True
+                        )
+                        if result.returncode != 0:
+                            print(f"npm {desc} failed: {result.stderr}")
+                            return 1
+                    self._write_build_hash(frontend_dir)
+                else:
+                    print("Frontend build is up to date, skipping npm install/build")
 
                 self.frontend_process = self.start_process(
                     ["npm", "run", "start"],

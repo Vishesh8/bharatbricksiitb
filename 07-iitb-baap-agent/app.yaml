@@ -24,8 +24,4 @@ env:
   - name: VECTOR_SEARCH_INDEX
     value: "iitb.bharat_bricks.vs_gold_posts_index"
   - name: MODEL_ENDPOINT
-    value: "databricks-meta-llama-3-3-70b-instruct"
-  - name: PROMPT_NAME
-    value: "iitb_lingo_prompt"
-  - name: PROMPT_ALIAS
-    value: "production"
+    value: "databricks-qwen3-next-80b-a3b-instruct"
