@@ -24,7 +24,7 @@ resources:
             value_from: "experiment"
           # Configurable model endpoint
           - name: MODEL_ENDPOINT
-            value: "databricks-qwen3-next-80b-a3b-instruct"
+            value: "databricks-llama-4-maverick"
           # System prompt from UC Prompt Registry (format: catalog.schema.prompt_name@alias)
           - name: SYSTEM_PROMPT_NAME
             value: "iitb.bharat_bricks.iitb_lingo_prompt@production"
