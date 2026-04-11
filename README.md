@@ -271,7 +271,6 @@ Use Delta Live Tables (DLT) pipelines to transform raw data into silver and gold
 You should now see the pipeline with the following assets:
 - `gold_comments.sql`
 - `gold_posts.sql`
-- `gold_posts_chunked.sql`
 - `silver_comments.sql`
 - `silver_posts.sql`
 
