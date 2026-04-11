@@ -35,7 +35,7 @@ historyRouter.get('/', requireAuth, async (req: Request, res: Response) => {
     return res.status(response.status).json(response.json);
   }
 
-  const limit = Number.parseInt((req.query.limit as string) || '10');
+  const limit = Math.min(Number.parseInt((req.query.limit as string) || '10'), 50);
   const startingAfter = req.query.starting_after as string | undefined;
   const endingBefore = req.query.ending_before as string | undefined;
 

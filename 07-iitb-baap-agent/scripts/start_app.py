@@ -261,17 +261,24 @@ class ProcessManager:
             if not self.no_ui:
                 frontend_dir = Path("e2e-chatbot-app-next")
                 if not self._frontend_build_up_to_date(frontend_dir):
-                    for cmd, desc in [("npm install", "install"), ("npm run build", "build")]:
-                        print(f"Running npm {desc}...")
-                        result = subprocess.run(
-                            cmd.split(), cwd=frontend_dir, capture_output=True, text=True
-                        )
-                        if result.returncode != 0:
-                            print(f"npm {desc} failed: {result.stderr}")
-                            return 1
+                    print("Running npm install...")
+                    result = subprocess.run(
+                        "npm install".split(), cwd=frontend_dir, capture_output=True, text=True
+                    )
+                    if result.returncode != 0:
+                        print(f"npm install failed: {result.stderr}")
+                        return 1
                     self._write_build_hash(frontend_dir)
                 else:
-                    print("Frontend build is up to date, skipping npm install/build")
+                    print("Dependencies up to date, skipping npm install")
+
+                print("Running npm build...")
+                result = subprocess.run(
+                    "npm run build".split(), cwd=frontend_dir, capture_output=True, text=True
+                )
+                if result.returncode != 0:
+                    print(f"npm build failed: {result.stderr}")
+                    return 1
 
                 self.frontend_process = self.start_process(
                     ["npm", "run", "start"],

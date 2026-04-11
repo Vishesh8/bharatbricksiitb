@@ -180,19 +180,21 @@ chatRouter.post('/', requireAuth, async (req: Request, res: Response) => {
     let uiMessages: ChatMessage[];
     if (message) {
       uiMessages = [...previousMessages, message];
-      await saveMessages({
-        messages: [
-          {
-            chatId: id,
-            id: message.id,
-            role: 'user',
-            parts: message.parts,
-            attachments: [],
-            createdAt: new Date(),
-            traceId: null,
-          },
-        ],
-      });
+      if (dbAvailable) {
+        await saveMessages({
+          messages: [
+            {
+              chatId: id,
+              id: message.id,
+              role: 'user',
+              parts: message.parts,
+              attachments: [],
+              createdAt: new Date(),
+              traceId: null,
+            },
+          ],
+        });
+      }
     } else {
       // Continuation: use existing messages without adding new user message
       uiMessages = previousMessages as ChatMessage[];

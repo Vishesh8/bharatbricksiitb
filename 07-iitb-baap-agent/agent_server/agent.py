@@ -162,24 +162,20 @@ def init_mcp_client(workspace_client: WorkspaceClient) -> DatabricksMultiServerM
 
 
 async def get_or_init_tools():
-    global _cached_tools, _cache_timestamp
+    """Fetch MCP tools, caching for _CACHE_TTL_SECONDS to keep names fresh."""
+    global _cached_tools, _cache_timestamp, _cached_agent
 
     now = time.monotonic()
-    has_mcp_tools = _cached_tools is not None and any(
-        t.name != "get_current_time" for t in _cached_tools
-    )
-    if _cached_tools is not None and (has_mcp_tools or now - _cache_timestamp < _CACHE_TTL_SECONDS):
+    if _cached_tools is not None and now - _cache_timestamp < _CACHE_TTL_SECONDS:
         return _cached_tools
 
     async with _cache_lock:
         now = time.monotonic()
-        has_mcp_tools = _cached_tools is not None and any(
-            t.name != "get_current_time" for t in _cached_tools
-        )
-        if _cached_tools is not None and (
-            has_mcp_tools or now - _cache_timestamp < _CACHE_TTL_SECONDS
-        ):
+        if _cached_tools is not None and now - _cache_timestamp < _CACHE_TTL_SECONDS:
             return _cached_tools
+
+        # Invalidate the cached agent graph so it rebuilds with fresh tools
+        _cached_agent = None
 
         ws = _get_sp_workspace_client()
         mcp_client = init_mcp_client(ws)
@@ -342,8 +338,18 @@ async def stream_handler(
 
     tools = await get_or_init_tools()
     user_query = _extract_last_user_query(request)
+    original_messages = to_chat_completions_input([i.model_dump() for i in request.input])
 
-    prefetch_messages = await pre_fetch_as_messages(user_query, tools)
+    has_prior_tool_results = any(
+        getattr(m, "role", None) == "tool" or isinstance(m, ToolMessage)
+        for m in original_messages
+    )
+
+    if has_prior_tool_results:
+        logger.info("Follow-up turn detected, skipping prefetch")
+        prefetch_messages = []
+    else:
+        prefetch_messages = await pre_fetch_as_messages(user_query, tools)
 
     for msg in prefetch_messages:
         for item in output_to_responses_items_stream([msg]):
@@ -352,7 +358,6 @@ async def stream_handler(
     agent, system_prompt = await get_or_create_agent(tools)
 
     mlflow.update_current_trace(metadata={"system_prompt": system_prompt[:2000]})
-    original_messages = to_chat_completions_input([i.model_dump() for i in request.input])
     messages = {"messages": original_messages + prefetch_messages}
 
     async for event in process_agent_astream_events(
