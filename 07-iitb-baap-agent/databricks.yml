@@ -1,0 +1,71 @@
+bundle:
+  name: agent_langgraph
+
+resources:
+  apps:
+    agent_langgraph:
+      name: "agent-langgraph"
+      description: "LangGraph agent application"
+      source_code_path: ./
+      config:
+        command: ["uv", "run", "start-app"]
+        env:
+          - name: MLFLOW_TRACKING_URI
+            value: "databricks"
+          - name: MLFLOW_REGISTRY_URI
+            value: "databricks-uc"
+          - name: API_PROXY
+            value: "http://localhost:8000/invocations"
+          - name: CHAT_APP_PORT
+            value: "3000"
+          - name: CHAT_PROXY_TIMEOUT_SECONDS
+            value: "300"
+          - name: MLFLOW_EXPERIMENT_ID
+            value_from: "experiment"
+          # Configurable model endpoint
+          - name: MODEL_ENDPOINT
+            value: "databricks-qwen3-next-80b-a3b-instruct"
+          # System prompt from UC Prompt Registry (format: catalog.schema.prompt_name@alias)
+          - name: SYSTEM_PROMPT_NAME
+            value: "iitb.bharat_bricks.iitb_lingo_prompt@production"
+          # Genie Space ID for analytics queries
+          - name: GENIE_SPACE_ID
+            value: "01f135a25c7a1f63b039f802c37eaf5e"
+          # Vector Search index (format: catalog.schema.index_name)
+          - name: VECTOR_SEARCH_INDEX
+            value: "iitb.bharat_bricks.vs_gold_posts_index"
+
+      # Resources which this app has access to
+      resources:
+        - name: 'experiment'
+          experiment:
+            experiment_id: "1568566937566223"
+            permission: 'CAN_MANAGE'
+
+        - name: 'iitb_genie_space'
+          genie_space:
+            name: 'IITB Bharat Bricks Genie'
+            space_id: '01f135a25c7a1f63b039f802c37eaf5e'
+            permission: 'CAN_RUN'
+
+        - name: 'vs_gold_posts_index'
+          uc_securable:
+            securable_full_name: 'iitb.bharat_bricks.vs_gold_posts_index'
+            securable_type: 'TABLE'
+            permission: 'SELECT'
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-d3bdf797-f90e.cloud.databricks.com
+
+  prod:
+    mode: production
+    # workspace:
+    #   host: https://...
+    resources:
+      apps:
+        agent_langgraph:
+          name: agent-langgraph

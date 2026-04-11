@@ -1353,6 +1353,87 @@ https://<workspace-url>/apps/agent-iitb-agent
 
 Users with appropriate permissions can now interact with the IIT Bombay Campus Advisor agent to explore student discussions, analytics, and insights from r/iitbombay.
 
+**Step 14: Deploy Agent on Other Workspaces**
+
+To deploy the IITB agent on a different Databricks workspace, simply update the environment variables in `databricks.yml`. **No code changes required!**
+
+**14.1: Prerequisites**
+
+1. **Genie Space** - Create or identify a Genie space with your data
+2. **Vector Search Index** - Create a vector search index for semantic search
+3. **MLflow Experiment** - Create an experiment for tracing
+4. **UC Prompt** (optional) - Register a system prompt in Unity Catalog
+
+**14.2: Configuration**
+
+Edit `07-iitb-baap-agent/databricks.yml` to point to your resources:
+
+```yaml
+resources:
+  apps:
+    agent_langgraph:
+      config:
+        env:
+          # Model endpoint (change to your preferred model)
+          - name: MODEL_ENDPOINT
+            value: "databricks-claude-sonnet-4"
+
+          # System prompt from UC (format: catalog.schema.prompt_name@alias)
+          - name: SYSTEM_PROMPT_NAME
+            value: "your_catalog.your_schema.your_prompt@production"
+
+          # Genie Space ID (from Genie URL)
+          - name: GENIE_SPACE_ID
+            value: "YOUR_GENIE_SPACE_ID"
+
+          # Vector Search index (format: catalog.schema.index_name)
+          - name: VECTOR_SEARCH_INDEX
+            value: "your_catalog.your_schema.your_index"
+
+      resources:
+        # MLflow experiment for tracing
+        - name: 'experiment'
+          experiment:
+            experiment_id: "YOUR_EXPERIMENT_ID"
+            permission: 'CAN_MANAGE'
+
+        # Genie Space for analytics
+        - name: 'genie_space'
+          genie_space:
+            name: 'Your Genie Space'
+            space_id: 'YOUR_GENIE_SPACE_ID'
+            permission: 'CAN_RUN'
+
+        # Vector Search Index for RAG
+        - name: 'vector_index'
+          uc_securable:
+            securable_full_name: 'your_catalog.your_schema.your_index'
+            securable_type: 'TABLE'
+            permission: 'SELECT'
+```
+
+**14.3: Environment Variables Reference**
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `MODEL_ENDPOINT` | LLM model to use | `databricks-claude-sonnet-4`, `databricks-gpt-5-2` |
+| `SYSTEM_PROMPT_NAME` | UC prompt (catalog.schema.name@alias) | `iitb.bharat_bricks.iitb_lingo_prompt@production` |
+| `GENIE_SPACE_ID` | Genie space ID from URL | `01f135a25c7a1f63b039f802c37eaf5e` |
+| `VECTOR_SEARCH_INDEX` | Vector search index | `iitb.bharat_bricks.vs_gold_posts_index` |
+
+**14.4: Deploy**
+
+```bash
+# Authenticate with your workspace
+databricks configure --profile my-workspace
+
+# Deploy the app
+databricks bundle deploy --profile my-workspace
+
+# Start the app
+databricks bundle run agent_langgraph --profile my-workspace
+```
+
 ---
 
 **Questions?** Open an issue or reach out during the workshop!
