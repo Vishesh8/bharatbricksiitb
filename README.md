@@ -634,6 +634,233 @@ The dashboard will be organized into multiple tabs, each focusing on different a
 3. Enter a dashboard name: `IIT Bombay Student Life Explorer` (or your preferred name)
 4. Click **Publish** to make the dashboard available to your team
 
+**Step 11: Deploy Analytics Genie Space for Natural Language Queries** ([visual guide](instructions/09-ai-bi-genie.pdf))
+
+Use AI/BI Genie to create a conversational analytics interface that allows users to explore IIT Bombay student trends using natural language questions.
+
+**11.1: Navigate to Genie Deployment Folder**
+
+1. In your Databricks workspace, click **Workspace** in the left sidebar
+2. Navigate to your Git folder: **bharatbricksiitb** (or your repository name)
+3. Click on the **05-iitb-junta-analytics-genie** folder to open it
+4. Click on the **deploy** notebook to open the deployment script
+
+**11.2: Configure Genie Space Deployment**
+
+1. In the deployment notebook, locate the configuration cells at the top
+2. Click the **Run** button (or press **Shift+Enter**) to execute the first cell
+3. In the **New Catalog** field, enter: `iitb`
+4. In the **SQL Warehouse ID** field, you'll need to provide your warehouse ID
+
+**11.3: Select SQL Warehouse**
+
+1. Navigate to **SQL Warehouses** in the left sidebar
+2. Click on **Serverless Starter Warehouse** (or your preferred warehouse)
+3. Copy the warehouse ID from the URL or the details page
+   - Format: `(ID: d3754c233dd0e522)` or similar
+4. Return to the deployment notebook and paste the warehouse ID
+
+**11.4: Run Deployment Notebook**
+
+1. Click **Run all** (or manually run each cell sequentially)
+2. The deployment script will:
+   - Create widgets for parameterization
+   - Validate required parameters (catalog, warehouse_id)
+   - Deploy the exported Genie Space to your Databricks workspace
+   - Configure the space with your catalog and schema settings
+3. Wait for the deployment to complete — you should see a success message
+4. Click the generated link to **Open Genie Space: 05 IITB Junta Analytics**
+
+**11.5: Explore the Genie Space Interface**
+
+Once the Genie Space opens, you'll see the analytics interface with several key sections:
+
+1. **Data tab** — View and manage connected data sources:
+   - Click **Data** to see available tables
+   - Click **iitb.bharat_bricks** to view schema details
+   - Tables: `gold_comments`, `gold_posts`, `iitb_subreddit_metrics` (metric view)
+
+2. **Instructions tab** — Configure space behavior and context:
+   - Click **Instructions** to view or edit guidance
+   - **Text** — General instructions on how Genie should behave
+   - **Joins** — Define relationships between tables
+   - **SQL Expressions** — Create reusable measures and dimensions
+   - **SQL Queries** — Pre-built queries that Genie can learn from
+
+3. **Common questions** — Pre-configured sample queries:
+   - "What topics are there and how are they connected? Give me a short summary."
+   - "What is the monthly distribution of total posts in r/iitbombay?"
+
+**11.6: Configure Instructions and Context**
+
+**Instructions — Text:**
+
+The Genie Space includes detailed instructions that guide the AI agent:
+
+```
+DATA CONTEXT:
+This Genie space analyzes student life at IIT Bombay through the r/iitbombay subreddit:
+- Posts span from April 2018 to March 2026 (~1,300 posts, ~17K comments)
+- Posts are categorized by topic flair: Question, Acad, Tech, Cult, Sports, Mast, IIT Selection
+- Affiliation Categories: Hostel, Department, Alumni, City/Region, Batch Year
+
+ANALYTICS TERMINOLOGY:
+- Engagement = comments + votes combined
+- High engagement post = 2M+ comments OR 10M+ score
+- OP = Original Poster, thread depth = how nested replies are
+- Join posts and comments on post_id
+
+QUERY GUIDANCE:
+- For aggregated metrics use iitb_subreddit_metrics metric view with MEASURE()
+- For text search use gold_posts, for comments use gold_comments
+- Join posts and comments on post_id
+
+RESPONSE STYLE — USE IITB LINGO:
+Always try to respond using IIT Bombay campus slang wherever possible.
+```
+
+**Instructions — Joins:**
+
+Pre-configured table joins for Genie to understand relationships:
+- `iitb.bharat_bricks.gold_posts` ↔ `iitb.bharat_bricks.gold_comments` (on `post_id`)
+
+**Instructions — SQL Expressions:**
+
+You can add custom measures and dimensions:
+1. Click **SQL Expressions** tab
+2. Click **Add** → **Measure** to create aggregated metrics
+3. Example measures:
+   - Total Posts: `COUNT(post_id)`
+   - Avg Score: `AVG(score)`
+   - High Engagement Rate: `SUM(CASE WHEN is_high_engagement THEN 1 ELSE 0 END) / COUNT(*)`
+
+**Instructions — SQL Queries:**
+
+Pre-built queries that help Genie learn your data patterns:
+1. Click **SQL Queries** tab to view saved queries
+2. Example queries included:
+   - "What are the top posts by engagement?"
+   - "Show posting trends by academic term"
+   - "What is the flair distribution?"
+   - "Who are the most active authors?"
+
+**11.7: Ask Natural Language Questions**
+
+**Using Chat Mode:**
+
+1. Click the **Ask your question...** field at the bottom
+2. Type natural language queries, for example:
+   ```
+   What is the monthly distribution of total posts in r/iitbombay?
+   ```
+3. Press **Enter** to submit the query
+4. Genie will analyze the request and generate:
+   - SQL query to answer the question
+   - Visualizations (charts, tables) showing results
+   - Natural language summary of findings
+
+**Using Agent Mode (Advanced Analysis):**
+
+For more complex, multi-step analysis:
+
+1. Click the **Agent** button (next to Chat)
+2. Ask complex questions that require deeper reasoning:
+   ```
+   what are students talking about and why? are there any seasonal trends in the activity volume along with semester timelines?
+   ```
+3. Agent mode will:
+   - Break down the question into multiple analytical steps
+   - Generate multiple SQL queries to investigate different angles
+   - Create visualizations showing topic distributions and activity trends
+   - Provide comprehensive analysis with insights
+
+**11.8: Example Analysis — Student Activity Trends**
+
+Try this multi-part query to explore seasonal patterns:
+
+**Query:**
+```
+what are students talking about and why? are there any seasonal trends in the activity volume along with semester timelines?
+```
+
+**Expected Results:**
+
+Genie will generate a comprehensive analysis including:
+
+1. **What Students Are Talking About:**
+   - Discussion topics ranked by volume and engagement
+   - Top categories: General Q&A (618 posts), Questions (174 posts), Cultural events, Politics (MACHAXX controversy)
+   - Most engaging topics: Cultural Events & Campus Life, Questions, Academic discussions
+
+2. **Why These Topics Drive Conversations:**
+   - Cultural events (fest performances, hostel mess food, Holi celebrations) generate high engagement (0.8 rate, 276 comments)
+   - Questions drive conversations through peer help and advice-seeking behavior
+   - Academic discussions during placement season and end-of-year stress
+
+3. **Activity Trends Over Time:**
+   - Explosive growth starting December 2025 (192 posts) continuing through Spring 2026
+   - March 2026 saw the highest activity (238 posts) — 10x jump from the 2024-25 academic year
+   - Seasonal momentum among student junta during serious academic periods
+
+4. **Semester-Specific Topic Shifts:**
+   - **Autumn Semester:** General campus life (208 untagged posts)
+   - **Spring Semester:** Questions (110 posts), Academic discussions (17 posts) on placement season stress
+
+**11.9: Monitor Genie Performance**
+
+Track conversation history and evaluate Genie's accuracy:
+
+1. Click the **Monitor** tab to view recent questions and answers
+2. Review the conversation history showing:
+   - Question text
+   - Type (Query, Request, etc.)
+   - Rating (Good, Neutral, Poor)
+   - User who asked
+   - Timestamp
+
+**11.10: Run Benchmarks (Optional)**
+
+Test Genie's performance with pre-configured evaluation questions:
+
+1. Click the **Benchmark** tab (next to Monitor)
+2. Click **Questions (7)** to view benchmark questions
+3. Review the test questions:
+   - "How do posting trends and average post scores vary by academic term?"
+   - "What are the top posts by combined engagement of score and comments?"
+   - "What are the top topics discussed in the insti junta..."
+   - "Which posts received low engagement this year..."
+
+4. Click **Run all benchmarks** to execute the evaluation suite
+5. Genie will run all benchmark questions and display:
+   - Assessment: Good ✓ or needs improvement
+   - Model output SQL queries
+   - Ground truth SQL answers for comparison
+   - Accuracy scores for each question
+
+6. Review results to identify areas where Genie needs refinement
+
+**11.11: Download Analysis Results**
+
+Export insights for sharing or reporting:
+
+1. After Genie generates an analysis, click **Download PDF** (if available)
+2. The PDF will include:
+   - Activity trends visualizations (line charts, bar charts)
+   - Topic distribution analysis
+   - Semester-specific insights
+   - Natural language summary of findings
+
+**11.12: Share the Genie Space**
+
+Make the analytics interface available to your team:
+
+1. Click the **Share** button (top right)
+2. Configure access permissions:
+   - **Can view:** Users can ask questions and view results
+   - **Can edit:** Users can modify instructions and configure the space
+3. Add individual users or groups
+4. Click **Share** to grant access
+
 ---
 
 **Questions?** Open an issue or reach out during the workshop!
