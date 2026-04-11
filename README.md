@@ -988,6 +988,371 @@ print(results)
 
 This will return the top 5 most semantically similar chunks to your query, enabling natural language search across student discussions.
 
+**Step 13: Deploy Conversational Agent Using LangGraph And Databricks Apps** ([visual guide](instructions/11-langgraph-agent-app.pdf))
+
+Build and deploy a production-ready conversational agent using LangGraph and MLflow on Databricks Apps. This step covers creating an agent app, configuring prompts with versioning, syncing code locally, and deploying to Databricks.
+
+**13.1: Navigate to Apps**
+
+1. In your Databricks workspace, click **Compute** in the left sidebar
+2. Click the **Apps** tab at the top
+3. Click **Create app** button (top right)
+
+**13.2: Select Agent Template**
+
+1. Click the **Agents** tab in the "Create new app" dialog
+2. Click **Agent - LangGraph**
+   - Description: "A conversational agent backend and UI using LangGraph and MLflow AgentServer"
+   - Dependencies: MLflow experiment
+
+**13.3: Configure MLflow Experiment**
+
+1. Click **Select experiment** dropdown
+2. Click **Create new experiment**
+3. In the "Create new experiment" dialog:
+   - **Experiment name**: Enter `exp-iitb-baap-agent`
+   - Experiment will be created at: `/Users/<username>@gmail.com/exp-iitb-baap-agent`
+4. Click **Create** to confirm
+
+**13.4: Configure Compute Resources**
+
+1. **Compute size**: Click the dropdown
+2. Select **Large - Up to 4 vCPU, 12 GB memory** (1 DBU/hour)
+   - Recommended for agent workloads with LLM inference
+3. Click **Next** to proceed
+
+**13.5: Review App Authorization**
+
+1. Review the **App authorization** settings
+2. The app will gain the following authorizations:
+   - **Resource**: MLflow experiment (`exp-iitb-baap-agent`)
+   - **Permission**: Can edit
+3. No additional user authorization scopes are required
+4. Click **Next** to proceed
+
+**13.6: Configure App Metadata**
+
+1. Click the **App name** field
+2. **App name**: Enter `iitb-agent`
+   - This is the unique identifier for your Databricks App
+3. **Description**: Auto-populated as "A conversational agent backend and UI using LangGraph and MLflow AgentServer"
+4. **Serverless usage policy**: None (default)
+5. Click **Install** to create the app
+
+**13.7: Create System Prompt**
+
+**7.1: Navigate to Agent Repository**
+
+1. Open your Git repository in a new tab or locally
+2. Navigate to the `07-iitb-baap-agent` folder
+3. Click on **SYSTEM_PROMPT.md** to view the agent's system prompt
+4. Copy the entire prompt content (Cmd+C or Ctrl+C)
+
+The system prompt defines the agent's behavior, guidelines, and response format for answering questions about IIT Bombay campus life using r/iitbombay subreddit data.
+
+**7.2: Create Prompt in MLflow**
+
+1. Return to Databricks and click **Experiments** in the left sidebar
+2. Click on **exp-iitb-baap-agent** experiment
+3. Click the **Prompts** tab in the left panel
+4. Click **New prompt** button
+
+**7.3: Select Prompt Schema**
+
+1. Click **Choose** button next to "Target schema"
+2. In the "Select an asset" dialog:
+   - Click **For you** tab
+   - Click **iitb** → **bharat_bricks** to expand the catalog tree
+3. Click **Confirm** to select the schema
+
+**7.4: Name and Create Prompt Version**
+
+1. Click the **Enter prompt name** field
+2. **Prompt name**: Type `iitb_lingo_prompt`
+3. Click **Create** to create the prompt
+
+**7.5: Add Prompt Content**
+
+1. Click **Create new version** button
+2. In the prompt text field, paste the system prompt you copied earlier (Cmd+V or Ctrl+V)
+   - The prompt should start with: "You are the IIT Bombay Campus Advisor..."
+3. Review the prompt content to ensure correct formatting
+
+**7.6: Add Prompt Alias**
+
+1. Click **Add aliases** link (right sidebar under "Aliases")
+2. In the "Add/Edit alias for prompt version 1" dialog:
+   - Type `production` in the alias field
+   - Click the **production** suggestion that appears
+3. Click **Save aliases** to confirm
+
+The `production` alias allows you to reference this prompt version in your agent code without hardcoding version numbers.
+
+**13.8: Set Up Local Development Environment**
+
+**8.1: Install Databricks CLI**
+
+Install the Databricks CLI to sync files between your local machine and Databricks workspace.
+
+**macOS (using Homebrew):**
+```bash
+brew tap databricks/tap
+brew install databricks
+```
+
+**Windows (using WinGet):**
+```bash
+winget search databricks
+winget install Databricks.DatabricksCLI
+```
+
+**Linux (using curl):**
+```bash
+curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+```
+
+**8.2: Verify CLI Installation**
+
+```bash
+databricks --version
+```
+
+Expected output: `databricks version X.X.X` (version 0.205.0 or above)
+
+**8.3: Authenticate with Databricks**
+
+```bash
+databricks configure --token
+```
+
+Follow the prompts to enter:
+- **Databricks Host**: Your workspace URL (e.g., `https://adb-1234567890123456.7.azuredatabricks.net/`)
+- **Token**: Personal access token (create one from User Settings → Developer → Access Tokens)
+
+**13.9: Sync App Files to Local Machine**
+
+**9.1: Export App Template**
+
+Copy the agent app template from Databricks to your local computer:
+
+```bash
+databricks workspace export-dir /Workspace/Users/<username>@gmail.com/databricks_apps/agent-iitb-agent ~/agent-iitb-agent
+```
+
+Replace `<username>@gmail.com` with your Databricks workspace username.
+
+**9.2: Sync Future Edits (Bidirectional)**
+
+Set up continuous syncing to automatically sync changes between Databricks and your local environment:
+
+```bash
+databricks sync --watch ~/agent-iitb-agent /Workspace/Users/<username>@gmail.com/databricks_apps/agent-iitb-agent
+```
+
+This command will:
+- Watch for local file changes and push them to Databricks
+- Watch for Databricks changes and pull them to your local machine
+- Keep both environments synchronized in real-time
+
+**13.10: Run Agent Locally for Development**
+
+**10.1: Set Up Python Environment**
+
+Navigate to your agent directory and set up dependencies:
+
+```bash
+cd ~/agent-iitb-agent
+```
+
+**Install dependencies using pip:**
+```bash
+pip install -r requirements.txt
+```
+
+**Or using uv (faster):**
+```bash
+uv pip install -r requirements.txt
+```
+
+**10.2: Run the Agent Server**
+
+Start the local development server:
+
+```bash
+python app.py
+```
+
+**Expected output:**
+```
+INFO:     Started server process
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000
+```
+
+**10.3: Test the Agent Locally**
+
+Open your browser and navigate to:
+```
+http://127.0.0.1:8000
+```
+
+For Streamlit-based apps, use:
+```bash
+streamlit run app.py
+```
+
+And open:
+```
+http://localhost:8501
+```
+
+**13.11: Deploy Agent to Databricks Apps**
+
+**11.1: Deploy Using Databricks CLI**
+
+From your local agent directory, deploy to Databricks Apps:
+
+```bash
+databricks apps deploy agent-iitb-agent --source-code-path ~/agent-iitb-agent
+```
+
+**11.2: Monitor Deployment**
+
+The deployment process will:
+1. Upload your local code to Databricks workspace
+2. Build the app container with dependencies
+3. Start the app on the configured compute (Large - 4 vCPU, 12 GB)
+4. Return the app URL once deployment completes
+
+**Expected output:**
+```
+Deploying app...
+App deployed successfully!
+App URL: https://<workspace-url>/apps/<app-id>
+```
+
+**11.3: Access Your Deployed Agent**
+
+1. Navigate to **Compute → Apps** in your Databricks workspace
+2. Click on **iitb-agent** in the apps list
+3. Click **Open app** to launch the agent interface
+4. The app URL will be in the format:
+   ```
+   https://<workspace-url>/apps/agent-iitb-agent
+   ```
+
+**13.12: Test the Deployed Agent**
+
+**12.1: Ask Questions About IIT Bombay**
+
+Try these example queries:
+
+```
+What topics are students discussing the most on r/iitbombay?
+```
+
+```
+What are students saying about placements and career opportunities?
+```
+
+```
+Tell me about hostel life and campus culture at IIT Bombay.
+```
+
+```
+What are the trending discussions about academics and courses?
+```
+
+**12.2: Verify Agent Responses**
+
+The agent should:
+- Use the vector search tool to find relevant posts and comments
+- Query the Genie analytics tool for metrics and trends
+- Respond using IIT Bombay campus slang (IITB lingo)
+- Cite specific posts with titles and authors when sharing experiences
+- Aggregate perspectives for opinion-based questions
+- Be helpful, informative, and authentic to the IITB culture
+
+**13.13: Monitor Agent Performance**
+
+**13.1: View MLflow Traces**
+
+1. Click **Experiments** in the left sidebar
+2. Click on **exp-iitb-baap-agent**
+3. Click the **Traces** tab to view agent execution traces
+4. Review:
+   - Input queries
+   - Tool calls (vector search, Genie analytics)
+   - LLM responses
+   - Execution time and token usage
+
+**13.2: Review Agent Logs**
+
+1. Navigate to **Compute → Apps**
+2. Click on **iitb-agent**
+3. Click the **Logs** tab to view server logs
+4. Monitor for errors, warnings, and performance issues
+
+**13.3: Analyze Sessions**
+
+1. In the MLflow experiment, click the **Sessions** tab
+2. Review conversation sessions grouped by user
+3. Analyze:
+   - Session duration
+   - Number of turns per conversation
+   - Common query patterns
+   - Agent response quality
+
+**13.14: Update Agent Prompt**
+
+**14.1: Create New Prompt Version**
+
+1. Navigate to **Experiments → exp-iitb-baap-agent → Prompts**
+2. Click on **iitb_lingo_prompt**
+3. Click **Create new version**
+4. Edit the prompt text:
+   - Modify guidelines
+   - Add new response formats
+   - Update tool usage instructions
+5. Click **Save**
+
+**14.2: Update Production Alias**
+
+1. Click **Add aliases** for the new version
+2. Remove the alias from the old version
+3. Add **production** alias to the new version
+4. Click **Save aliases**
+
+**14.3: Redeploy Agent**
+
+The agent will automatically use the new prompt version tagged with the `production` alias:
+
+```bash
+databricks apps deploy agent-iitb-agent --source-code-path ~/agent-iitb-agent
+```
+
+**13.15: Share Your Agent**
+
+**15.1: Configure App Permissions**
+
+1. Navigate to **Compute → Apps**
+2. Click on **iitb-agent**
+3. Click the **Permissions** icon (or **Share** button)
+4. Add users or groups:
+   - **Can view**: Users can interact with the agent
+   - **Can edit**: Users can modify agent configuration
+5. Click **Save** to apply permissions
+
+**15.2: Share App URL**
+
+Share the app URL with your team:
+```
+https://<workspace-url>/apps/agent-iitb-agent
+```
+
+Users with appropriate permissions can now interact with the IIT Bombay Campus Advisor agent to explore student discussions, analytics, and insights from r/iitbombay.
+
 ---
 
 **Questions?** Open an issue or reach out during the workshop!
