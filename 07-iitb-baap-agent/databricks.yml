@@ -73,6 +73,12 @@ resources:
             securable_type: 'TABLE'
             permission: 'SELECT'
 
+        # Model serving endpoint
+        - name: 'llama_4_maverick'
+          serving_endpoint:
+            name: 'databricks-llama-4-maverick'
+            permission: 'CAN_QUERY'
+
 targets:
   dev:
     mode: development
