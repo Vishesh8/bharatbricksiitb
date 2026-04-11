@@ -14,3 +14,18 @@ env:
     value: "300"
   - name: MLFLOW_EXPERIMENT_ID
     valueFrom: "experiment"
+  # Resource configuration (loaded by agent_server/config.py)
+  - name: DATABRICKS_CATALOG
+    value: "iitb"
+  - name: DATABRICKS_SCHEMA
+    value: "bharat_bricks"
+  - name: GENIE_SPACE_ID
+    value: "01f135a25c7a1f63b039f802c37eaf5e"
+  - name: VECTOR_SEARCH_INDEX
+    value: "iitb.bharat_bricks.vs_gold_posts_index"
+  - name: MODEL_ENDPOINT
+    value: "databricks-meta-llama-3-3-70b-instruct"
+  - name: PROMPT_NAME
+    value: "iitb_lingo_prompt"
+  - name: PROMPT_ALIAS
+    value: "production"

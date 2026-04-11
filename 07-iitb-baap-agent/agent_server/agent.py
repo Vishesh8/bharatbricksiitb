@@ -1,13 +1,17 @@
+import asyncio
 import logging
-import os
 from datetime import datetime
+from pathlib import Path
 from typing import AsyncGenerator, Optional
 
 import litellm
 import mlflow
-import mlflow.genai
 from databricks.sdk import WorkspaceClient
-from databricks_langchain import ChatDatabricks, DatabricksMCPServer, DatabricksMultiServerMCPClient
+from databricks_langchain import (
+    ChatDatabricks,
+    DatabricksMCPServer,
+    DatabricksMultiServerMCPClient,
+)
 from langchain.agents import create_agent
 from langchain_core.tools import tool
 from mlflow.genai.agent_server import invoke, stream
@@ -18,6 +22,12 @@ from mlflow.types.responses import (
     to_chat_completions_input,
 )
 
+from agent_server.config import (
+    GENIE_SPACE_ID,
+    MODEL_ENDPOINT,
+    PROMPT_REGISTRY_URI,
+    VECTOR_SEARCH_INDEX,
+)
 from agent_server.utils import (
     get_databricks_host_from_env,
     get_session_id,
@@ -31,23 +41,12 @@ logging.getLogger("mlflow.utils.autologging_utils").setLevel(logging.ERROR)
 litellm.suppress_debug_info = True
 sp_workspace_client = WorkspaceClient()
 
-# Configuration from environment variables
-MODEL_ENDPOINT = os.getenv("MODEL_ENDPOINT", "databricks-claude-sonnet-4")
-SYSTEM_PROMPT_NAME = os.getenv("SYSTEM_PROMPT_NAME")
-GENIE_SPACE_ID = os.getenv("GENIE_SPACE_ID")
-VECTOR_SEARCH_INDEX = os.getenv("VECTOR_SEARCH_INDEX")  # format: catalog.schema.index_name
+# Module-level cache for MCP tools only (expensive network calls)
+# Prompt is loaded each request for MLflow linking
+_cached_tools = None
+_cache_lock = asyncio.Lock()
 
-# Load system prompt from UC Prompt Registry (if configured)
-SYSTEM_PROMPT = None
-if SYSTEM_PROMPT_NAME:
-    try:
-        _prompt_template = mlflow.genai.load_prompt(f"prompts:/{SYSTEM_PROMPT_NAME}")
-        SYSTEM_PROMPT = _prompt_template.format(
-            tools="Genie (for analytics queries) and Vector Search (for finding relevant community posts)"
-        )
-        logger.info(f"Loaded system prompt: {SYSTEM_PROMPT_NAME}")
-    except Exception as e:
-        logger.warning(f"Failed to load prompt {SYSTEM_PROMPT_NAME}: {e}")
+# PROMPT_REGISTRY_URI is imported from config.py
 
 
 @tool
@@ -57,48 +56,56 @@ def get_current_time() -> str:
 
 
 def init_mcp_client(workspace_client: WorkspaceClient) -> DatabricksMultiServerMCPClient:
+    """Initialize MCP client with Vector Search and Genie servers."""
     host_name = get_databricks_host_from_env()
-    servers = []
 
-    # Add Genie Space if configured
-    if GENIE_SPACE_ID:
-        servers.append(DatabricksMCPServer(
-            name="genie",
-            url=f"{host_name}/api/2.0/mcp/genie/{GENIE_SPACE_ID}",
-            workspace_client=workspace_client,
-        ))
-        logger.info(f"Added Genie MCP server: {GENIE_SPACE_ID}")
+    # Convert dotted index name to URL path (catalog.schema.index -> catalog/schema/index)
+    vs_index_path = VECTOR_SEARCH_INDEX.replace(".", "/")
 
-    # Add Vector Search if configured (parse catalog.schema.index_name)
-    if VECTOR_SEARCH_INDEX:
-        parts = VECTOR_SEARCH_INDEX.split(".")
-        if len(parts) == 3:
-            catalog, schema, index_name = parts
-            servers.append(DatabricksMCPServer(
-                name="vector-search",
-                url=f"{host_name}/api/2.0/mcp/vector-search/{catalog}/{schema}/{index_name}",
-                workspace_client=workspace_client,
-            ))
-            logger.info(f"Added Vector Search MCP server: {VECTOR_SEARCH_INDEX}")
-        else:
-            logger.warning(f"Invalid VECTOR_SEARCH_INDEX format: {VECTOR_SEARCH_INDEX}. Expected: catalog.schema.index_name")
+    # Vector Search MCP Server for RAG
+    vector_search_server = DatabricksMCPServer(
+        name="iitb-posts-search",
+        url=f"{host_name}/api/2.0/mcp/vector-search/{vs_index_path}",
+        workspace_client=workspace_client,
+    )
 
-    return DatabricksMultiServerMCPClient(servers)
+    # Genie MCP Server for Analytics
+    genie_server = DatabricksMCPServer(
+        name="iitb-analytics",
+        url=f"{host_name}/api/2.0/mcp/genie/{GENIE_SPACE_ID}",
+        workspace_client=workspace_client,
+    )
+
+    return DatabricksMultiServerMCPClient([vector_search_server, genie_server])
 
 
-async def init_agent(workspace_client: Optional[WorkspaceClient] = None):
-    tools = [get_current_time]
+async def get_or_init_tools():
+    """Cache MCP tools (expensive network calls). Returns list of tools."""
+    global _cached_tools
 
-    # Add MCP tools (Genie + Vector Search) if configured
-    mcp_client = init_mcp_client(workspace_client or sp_workspace_client)
-    try:
-        mcp_tools = await mcp_client.get_tools()
-        tools.extend(mcp_tools)
-        logger.info(f"Loaded {len(mcp_tools)} MCP tools")
-    except Exception:
-        logger.warning("Failed to fetch MCP tools. Continuing without MCP tools.", exc_info=True)
+    if _cached_tools is not None:
+        return _cached_tools
 
-    return create_agent(tools=tools, model=ChatDatabricks(endpoint=MODEL_ENDPOINT))
+    async with _cache_lock:
+        if _cached_tools is not None:  # Double-check after acquiring lock
+            return _cached_tools
+
+        mcp_client = init_mcp_client(sp_workspace_client)
+        tools = [get_current_time]
+        try:
+            mcp_tools = await mcp_client.get_tools()
+            tools.extend(mcp_tools)
+            # Log at WARNING level to ensure it shows up in logs
+            tool_names = [t.name for t in mcp_tools]
+            print(f"[TOOLS] Loaded {len(mcp_tools)} MCP tools: {tool_names}", flush=True)
+            logger.warning(f"MCP Tools loaded: {tool_names}")
+        except Exception as e:
+            print(f"[TOOLS ERROR] Failed to fetch MCP tools: {e}", flush=True)
+            logger.warning(f"Failed to fetch MCP tools: {e}. Continuing without MCP tools.")
+
+        _cached_tools = tools
+        print(f"[TOOLS] Total tools available: {[t.name for t in tools]}", flush=True)
+        return tools
 
 
 @invoke()
@@ -111,6 +118,55 @@ async def invoke_handler(request: ResponsesAgentRequest) -> ResponsesAgentRespon
     return ResponsesAgentResponse(output=outputs)
 
 
+# Path to external system prompt file
+SYSTEM_PROMPT_FILE = Path(__file__).parent / "SYSTEM_PROMPT.md"
+
+# Inline fallback (last resort if file and registry both fail)
+INLINE_FALLBACK_PROMPT = """You are the IIT Bombay Campus Advisor. Answer questions about IIT Bombay campus life using community discussions.
+
+You have access to these tools:
+{tools}
+
+Use iitb-posts-search for opinions/experiences and iitb-analytics for statistics/trends.
+Output plain conversational text (no markdown). Use IITB slang naturally (insti, junta, macha, etc.)."""
+
+
+def _load_prompt_from_file() -> str | None:
+    """Load system prompt from SYSTEM_PROMPT.md file."""
+    try:
+        if SYSTEM_PROMPT_FILE.exists():
+            return SYSTEM_PROMPT_FILE.read_text()
+        logger.warning(f"System prompt file not found: {SYSTEM_PROMPT_FILE}")
+        return None
+    except Exception as e:
+        logger.warning(f"Failed to read system prompt file: {e}")
+        return None
+
+
+@mlflow.trace(name="load_system_prompt")
+def load_system_prompt(tools: list) -> str:
+    """Load and format system prompt. Priority: registry > file > inline fallback."""
+    tool_descriptions = "\n".join([f"- {t.name}: {t.description}" for t in tools])
+
+    # Try 1: Load from MLflow prompt registry
+    try:
+        prompt = mlflow.genai.load_prompt(PROMPT_REGISTRY_URI)
+        logger.info("Loaded prompt from MLflow registry")
+        return prompt.format(tools=tool_descriptions)
+    except Exception as e:
+        logger.warning(f"Failed to load prompt from registry: {e}")
+
+    # Try 2: Load from SYSTEM_PROMPT.md file
+    file_prompt = _load_prompt_from_file()
+    if file_prompt:
+        logger.info("Using prompt from SYSTEM_PROMPT.md file")
+        return file_prompt.format(tools=tool_descriptions)
+
+    # Try 3: Use inline fallback
+    logger.warning("Using inline fallback prompt")
+    return INLINE_FALLBACK_PROMPT.format(tools=tool_descriptions)
+
+
 @stream()
 async def stream_handler(
     request: ResponsesAgentRequest,
@@ -118,21 +174,23 @@ async def stream_handler(
     if session_id := get_session_id(request):
         mlflow.update_current_trace(metadata={"mlflow.trace.session": session_id})
 
-    # By default, uses service principal credentials.
-    # For on-behalf-of user authentication, use get_user_workspace_client() instead:
-    #   agent = await init_agent(workspace_client=get_user_workspace_client())
-    agent = await init_agent()
+    # Get cached tools (expensive MCP calls, reused)
+    tools = await get_or_init_tools()
 
-    # Get user messages
-    user_messages = to_chat_completions_input([i.model_dump() for i in request.input])
+    # Load prompt inside traced function (enables MLflow prompt linking)
+    system_prompt = load_system_prompt(tools)
 
-    # Prepend system prompt if configured
-    if SYSTEM_PROMPT:
-        all_messages = [{"role": "system", "content": SYSTEM_PROMPT}] + user_messages
-    else:
-        all_messages = user_messages
+    # Create agent with fresh prompt
+    agent = create_agent(
+        tools=tools,
+        model=ChatDatabricks(
+            endpoint=MODEL_ENDPOINT,
+            extra_body={"system": system_prompt},
+        ),
+    )
 
-    messages = {"messages": all_messages}
+    mlflow.update_current_trace(metadata={"system_prompt": system_prompt})
+    messages = {"messages": to_chat_completions_input([i.model_dump() for i in request.input])}
 
     async for event in process_agent_astream_events(
         agent.astream(input=messages, stream_mode=["updates", "messages"])

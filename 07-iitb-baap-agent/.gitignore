@@ -220,3 +220,14 @@ sketch
 
 **/.env
 **/.env.local
+
+# Downloaded chat UI template (not needed for deployment)
+e2e-chatbot-app-next/
+
+# Local MLflow SQLite database (not used - tracking goes to Databricks)
+mlflow.db
+
+# Local log files
+*.log
+backend.log
+frontend.log

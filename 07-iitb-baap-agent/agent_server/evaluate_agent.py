@@ -3,6 +3,8 @@ import logging
 
 import mlflow
 from dotenv import load_dotenv
+
+from agent_server.config import MODEL_ENDPOINT
 from mlflow.genai.agent_server import get_invoke_function
 from mlflow.genai.scorers import (
     Completeness,
@@ -51,7 +53,7 @@ test_cases = [
 simulator = ConversationSimulator(
     test_cases=test_cases,
     max_turns=5,
-    user_model="databricks:/databricks-claude-sonnet-4-5",
+    user_model=f"databricks:/{MODEL_ENDPOINT}",
 )
 
 # Get the invoke function that was registered via @invoke decorator in your agent

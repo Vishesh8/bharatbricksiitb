@@ -1,11 +1,21 @@
 bundle:
-  name: agent_langgraph
+  name: iitb_baap_agent
+
+sync:
+  exclude:
+    - e2e-chatbot-app-next/
+    - .venv/
+    - __pycache__/
+    - "*.pyc"
+    - .env
+    - .env.example
+    - mlflow.db
 
 resources:
   apps:
-    agent_langgraph:
-      name: "agent-langgraph"
-      description: "LangGraph agent application"
+    iitb_baap_agent:
+      name: "iitb-baap-agent"
+      description: "IIT Bombay Campus Advisor - Agentic RAG with Genie"
       source_code_path: ./
       config:
         command: ["uv", "run", "start-app"]
@@ -22,62 +32,43 @@ resources:
             value: "300"
           - name: MLFLOW_EXPERIMENT_ID
             value_from: "experiment"
-          # Configurable model endpoint
-          - name: MODEL_ENDPOINT
-            value: "databricks-llama-4-maverick"
-          # System prompt from UC Prompt Registry (format: catalog.schema.prompt_name@alias)
-          - name: SYSTEM_PROMPT_NAME
-            value: "iitb.bharat_bricks.iitb_lingo_prompt@production"
-          # Genie Space ID for analytics queries
+          # Resource configuration (loaded by agent_server/config.py)
+          - name: DATABRICKS_CATALOG
+            value: "iitb"
+          - name: DATABRICKS_SCHEMA
+            value: "bharat_bricks"
           - name: GENIE_SPACE_ID
             value: "01f135a25c7a1f63b039f802c37eaf5e"
-          # Vector Search index (format: catalog.schema.index_name)
           - name: VECTOR_SEARCH_INDEX
             value: "iitb.bharat_bricks.vs_gold_posts_index"
+          - name: MODEL_ENDPOINT
+            value: "databricks-meta-llama-3-3-70b-instruct"
+          - name: PROMPT_NAME
+            value: "iitb_lingo_prompt"
+          - name: PROMPT_ALIAS
+            value: "production"
 
       # Resources which this app has access to
       resources:
+        # MLflow experiment for tracing
         - name: 'experiment'
           experiment:
             experiment_id: "1568566937566223"
             permission: 'CAN_MANAGE'
 
-        - name: 'iitb_genie_space'
-          genie_space:
-            name: 'IITB Bharat Bricks Genie'
-            space_id: '01f135a25c7a1f63b039f802c37eaf5e'
-            permission: 'CAN_RUN'
-
-        - name: 'vs_gold_posts_index'
+        # Vector Search Index (RAG)
+        - name: 'posts_vector_index'
           uc_securable:
             securable_full_name: 'iitb.bharat_bricks.vs_gold_posts_index'
             securable_type: 'TABLE'
             permission: 'SELECT'
 
-        # Genie Space underlying tables
-        - name: 'gold_posts'
-          uc_securable:
-            securable_full_name: 'iitb.bharat_bricks.gold_posts'
-            securable_type: 'TABLE'
-            permission: 'SELECT'
-
-        - name: 'gold_comments'
-          uc_securable:
-            securable_full_name: 'iitb.bharat_bricks.gold_comments'
-            securable_type: 'TABLE'
-            permission: 'SELECT'
-
-        - name: 'iitb_subreddit_metrics'
-          uc_securable:
-            securable_full_name: 'iitb.bharat_bricks.iitb_subreddit_metrics'
-            securable_type: 'TABLE'
-            permission: 'SELECT'
-
-        # Model serving endpoint
-        - name: 'llama_4_maverick'
-          serving_endpoint:
-            name: 'databricks-llama-4-maverick'
-            permission: 'CAN_QUERY'
+        # Genie Space (Analytics)
+        - name: 'iitb_genie'
+          genie_space:
+            name: 'IITB Junta Analytics'
+            space_id: '01f135a25c7a1f63b039f802c37eaf5e'
+            permission: 'CAN_RUN'
 
 targets:
   dev:
@@ -88,9 +79,9 @@ targets:
 
   prod:
     mode: production
-    # workspace:
-    #   host: https://...
+    workspace:
+      host: https://dbc-d3bdf797-f90e.cloud.databricks.com
     resources:
       apps:
-        agent_langgraph:
-          name: agent-langgraph
+        iitb_baap_agent:
+          name: iitb-baap-agent
