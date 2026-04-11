@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import iitbLogo from '@/assets/iitb-logo.png';
 
 export const Greeting = () => {
   return (
@@ -12,7 +13,7 @@ export const Greeting = () => {
         exit={{ opacity: 0, y: 10 }}
         className="flex flex-col items-center gap-4"
       >
-        <img src="/iitb-logo.png" alt="IIT Bombay" className="h-16 w-16 md:h-20 md:w-20 rounded-lg" />
+        <img src={iitbLogo} alt="IIT Bombay" className="h-16 w-16 md:h-20 md:w-20 rounded-lg" />
         <div className="font-semibold text-lg md:text-xl text-center">
           Namaste, junta! Welcome to IITB Campus Advisor
         </div>

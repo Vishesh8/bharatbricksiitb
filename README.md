@@ -1306,4 +1306,182 @@ The agent should:
 
 ---
 
+## Deploying to Any Workspace
+
+This section covers deploying the Bharat Bricks pipeline to any Databricks workspace.
+
+### Prerequisites
+
+| Requirement | Description |
+|-------------|-------------|
+| **Databricks Workspace** | Unity Catalog enabled (Free Edition, Standard, or Premium) |
+| **SQL Warehouse** | Serverless or Pro (Starter warehouse works for most steps) |
+| **Compute** | Cluster or serverless for notebooks; Large app compute for agent |
+| **Local Tools** | Databricks CLI v0.205.0+, Python 3.11+, uv, Node.js 18+ |
+
+### Step 1: Configure Agent
+
+Update `07-iitb-baap-agent/databricks.yml`:
+
+```yaml
+resources:
+  apps:
+    iitb_baap_agent:
+      name: "<your-app-name>"
+      config:
+        env:
+          - name: DATABRICKS_CATALOG
+            value: "<your_catalog>"
+          - name: DATABRICKS_SCHEMA
+            value: "<your_schema>"
+          - name: GENIE_SPACE_ID
+            value: "<your_genie_space_id>"
+          - name: VECTOR_SEARCH_INDEX
+            value: "<your_catalog>.<your_schema>.vs_gold_posts_index"
+          - name: MODEL_ENDPOINT
+            value: "databricks-meta-llama-3-1-70b-instruct"  # or your preferred model
+      resources:
+        - name: 'experiment'
+          experiment:
+            experiment_id: "<your_experiment_id>"
+            permission: 'CAN_MANAGE'
+        - name: 'posts_vector_index'
+          uc_securable:
+            securable_full_name: '<your_catalog>.<your_schema>.vs_gold_posts_index'
+            securable_type: 'TABLE'
+            permission: 'SELECT'
+        - name: 'genie_space'
+          genie_space:
+            space_id: '<your_genie_space_id>'
+            permission: 'CAN_RUN'
+
+targets:
+  dev:
+    workspace:
+      host: https://<your-workspace>.cloud.databricks.com
+```
+
+Update `07-iitb-baap-agent/.env` for local development:
+
+```bash
+DATABRICKS_CONFIG_PROFILE=<your-profile>
+DATABRICKS_CATALOG=<your_catalog>
+DATABRICKS_SCHEMA=<your_schema>
+GENIE_SPACE_ID=<your_genie_space_id>
+VECTOR_SEARCH_INDEX=<your_catalog>.<your_schema>.vs_gold_posts_index
+MODEL_ENDPOINT=databricks-meta-llama-3-1-70b-instruct
+MLFLOW_EXPERIMENT_ID=<your_experiment_id>
+```
+
+### Step 2: Deploy Agent
+
+```bash
+cd 07-iitb-baap-agent
+
+# Authenticate
+databricks configure --token
+
+# Run pre-flight check locally
+uv run preflight
+
+# Deploy to Databricks Apps
+databricks bundle deploy --target dev
+```
+
+---
+
+## Troubleshooting
+
+### Data Ingestion Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| **Volume not found** | Volume doesn't exist or wrong path | Verify volume exists: `SELECT * FROM <catalog>.information_schema.volumes` |
+| **JSON parse errors** | Malformed JSON in raw files | Validate JSON: `python -m json.tool raw_data/iitbombay_posts.json` |
+| **Permission denied on volume** | Missing volume permissions | Grant `READ VOLUME` on `<catalog>.<schema>.data` to your user |
+
+### DLT Pipeline Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| **`ai_query` function not found** | Model endpoint unavailable | Use `databricks-meta-llama-3-1-8b-instruct` instead of `databricks-gpt-5` |
+| **Pipeline timeout** | Large batch size for AI inference | Reduce batch size or use a smaller model |
+| **Expectations dropping all rows** | Content moderation too strict | Check `content_moderation_label` distribution in `silver_*` tables |
+| **Source table not found** | Pipeline running before ingestion | Ensure `01-data-ingestion.ipynb` completed first |
+
+### Vector Search Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| **Endpoint not ready** | Endpoint still provisioning | Wait 5-10 minutes; check status in **Compute → Vector Search** |
+| **Index sync failed** | Source table has no CDF enabled | Recreate table with `delta.enableChangeDataFeed = true` |
+| **Embedding model error** | Model quota exceeded | Use a different embedding model or wait for quota reset |
+| **No results returned** | Index not synced | Trigger manual sync or wait for continuous sync |
+
+### Genie Space Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| **Catalog replacement failed** | Wrong `old_catalog` value | Check `serialized_space.json` for actual catalog references |
+| **Warehouse connection error** | Invalid warehouse ID | Copy ID from **SQL Warehouses** page (not the name) |
+| **Tables not accessible** | Missing table permissions | Grant `SELECT` on gold tables to all users |
+| **Genie returns SQL errors** | Schema mismatch | Verify table schemas match the Genie space configuration |
+
+### Agent Deployment Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| **MCP tools not loading** | Vector search or Genie not accessible | Verify `VECTOR_SEARCH_INDEX` and `GENIE_SPACE_ID` are correct |
+| **Model endpoint error** | Model not available in workspace | Use `databricks-meta-llama-3-1-70b-instruct` or another available model |
+| **Port already in use** | Previous server still running | Kill process: `lsof -ti :8000 \| xargs kill -9` |
+| **Bundle deploy fails** | Missing permissions on resources | Add resources to `databricks.yml` and grant permissions manually |
+| **App won't start** | Missing environment variables | Check `app.yaml` env section matches required config |
+| **Authentication failed** | Invalid or expired token | Re-run `databricks configure --token` |
+
+### Agent Runtime Issues
+
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| **"Tool not found" errors** | Tool name mismatch | Check tool names in logs; they use format `<catalog>__<schema>__<index>` |
+| **Slow responses** | Pre-fetch timeout | Increase `CHAT_PROXY_TIMEOUT_SECONDS` in `app.yaml` |
+| **No tool results** | Genie or VS permissions | Grant `CAN_RUN` on Genie space and `SELECT` on vector index |
+| **Session not tracking** | MLflow experiment misconfigured | Verify `MLFLOW_EXPERIMENT_ID` in `.env` and `databricks.yml` |
+
+### Common Validation Queries
+
+**Check table row counts:**
+```sql
+SELECT 'posts' as tbl, COUNT(*) FROM <catalog>.<schema>.posts
+UNION ALL SELECT 'comments', COUNT(*) FROM <catalog>.<schema>.comments
+UNION ALL SELECT 'gold_posts', COUNT(*) FROM <catalog>.<schema>.gold_posts
+UNION ALL SELECT 'gold_comments', COUNT(*) FROM <catalog>.<schema>.gold_comments
+UNION ALL SELECT 'gold_posts_chunked', COUNT(*) FROM <catalog>.<schema>.gold_posts_chunked;
+```
+
+**Test vector search:**
+```python
+from databricks.vector_search.client import VectorSearchClient
+vsc = VectorSearchClient()
+index = vsc.get_index(endpoint_name="<endpoint>", index_name="<catalog>.<schema>.vs_gold_posts_index")
+print(index.describe())  # Check status
+results = index.similarity_search(query_text="placements", columns=["title"], num_results=3)
+print(results)
+```
+
+**Test Genie space:**
+```python
+from databricks.sdk import WorkspaceClient
+w = WorkspaceClient()
+response = w.api_client.do("GET", f"/api/2.0/genie/spaces/<space_id>")
+print(response)  # Should return space metadata
+```
+
+**Pre-flight check (agent):**
+```bash
+cd 07-iitb-baap-agent
+uv run preflight  # Starts server, sends test request, verifies response
+```
+
+---
+
 **Questions?** Open an issue or reach out during the workshop!

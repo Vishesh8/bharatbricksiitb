@@ -4,6 +4,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { useSession } from '@/contexts/SessionContext';
 import { DbIcon } from '@/components/ui/db-icon';
 import { UserKeyIconIcon } from '@/components/icons';
+import iitbLogo from '@/assets/iitb-logo.png';
 
 export default function ChatLayout() {
   const { session, loading } = useSession();
@@ -24,7 +25,7 @@ export default function ChatLayout() {
       <div className="flex h-screen items-center justify-center bg-secondary">
         <div className="flex flex-col items-center gap-6">
           <div className="flex items-center gap-2 text-2xl font-bold text-foreground">
-            <img src="/iitb-logo.png" alt="IIT Bombay" className="h-8 w-8" />
+            <img src={iitbLogo} alt="IIT Bombay" className="h-8 w-8" />
             IITB Campus Advisor
           </div>
             <div className="flex w-80 flex-col items-center gap-4 rounded-md border border-border bg-background p-10 shadow-[var(--shadow-db-lg)]">

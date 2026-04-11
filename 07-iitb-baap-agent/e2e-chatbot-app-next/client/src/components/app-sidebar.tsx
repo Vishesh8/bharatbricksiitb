@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import iitbLogo from '@/assets/iitb-logo.png';
 
 import { SidebarHistory } from '@/components/sidebar-history';
 import { SidebarUserNav } from '@/components/sidebar-user-nav';
@@ -52,7 +53,7 @@ export function AppSidebar({
             className="flex items-center overflow-hidden px-1"
           >
             <span className="flex items-center gap-1.5 text-base font-semibold text-foreground">
-              <img src="/iitb-logo.png" alt="IIT Bombay" className="h-5 w-5" />
+              <img src={iitbLogo} alt="IIT Bombay" className="h-5 w-5" />
               IITB Advisor
             </span>
           </Link>
