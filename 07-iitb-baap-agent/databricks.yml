@@ -54,6 +54,25 @@ resources:
             securable_type: 'TABLE'
             permission: 'SELECT'
 
+        # Genie Space underlying tables
+        - name: 'gold_posts'
+          uc_securable:
+            securable_full_name: 'iitb.bharat_bricks.gold_posts'
+            securable_type: 'TABLE'
+            permission: 'SELECT'
+
+        - name: 'gold_comments'
+          uc_securable:
+            securable_full_name: 'iitb.bharat_bricks.gold_comments'
+            securable_type: 'TABLE'
+            permission: 'SELECT'
+
+        - name: 'iitb_subreddit_metrics'
+          uc_securable:
+            securable_full_name: 'iitb.bharat_bricks.iitb_subreddit_metrics'
+            securable_type: 'TABLE'
+            permission: 'SELECT'
+
 targets:
   dev:
     mode: development
