@@ -1,0 +1,1196 @@
+{
+  "datasets": [
+    {
+      "name": "ad580a30",
+      "displayName": "iitb_subreddit_metrics",
+      "asset_name": "iitb.bharat_bricks.iitb_subreddit_metrics"
+    },
+    {
+      "name": "popular_posts",
+      "displayName": "Popular Posts Analysis",
+      "queryLines": [
+        "SELECT\n",
+        "  post_id,\n",
+        "  title,\n",
+        "  author,\n",
+        "  flair,\n",
+        "  author_flair_text,\n",
+        "  score,\n",
+        "  num_comments,\n",
+        "  upvote_ratio,\n",
+        "  created_at,\n",
+        "  content_type\n",
+        "FROM\n",
+        "  iitb.bharat_bricks.gold_posts\n",
+        "WHERE\n",
+        "  score > 50\n",
+        "  OR num_comments > 50\n",
+        "ORDER BY\n",
+        "  score DESC"
+      ],
+      "catalog": "iitb",
+      "schema": "bharat_bricks"
+    },
+    {
+      "name": "author_engagement",
+      "displayName": "Author Engagement Analysis",
+      "queryLines": [
+        "SELECT\n",
+        "  p.author,\n",
+        "  p.author_flair_text,\n",
+        "  COUNT(DISTINCT p.post_id) as total_posts,\n",
+        "  AVG(p.score) as avg_post_score,\n",
+        "  AVG(p.num_comments) as avg_comments_per_post,\n",
+        "  SUM(p.num_comments) as total_comments_received\n",
+        "FROM\n",
+        "  iitb.bharat_bricks.gold_posts p\n",
+        "WHERE\n",
+        "  p.author != '[deleted]'\n",
+        "GROUP BY\n",
+        "  p.author,\n",
+        "  p.author_flair_text\n",
+        "HAVING\n",
+        "  COUNT(DISTINCT p.post_id) >= 3\n",
+        "ORDER BY\n",
+        "  total_posts DESC"
+      ],
+      "catalog": "iitb",
+      "schema": "bharat_bricks"
+    }
+  ],
+  "pages": [
+    {
+      "name": "df8cca5a",
+      "displayName": "Overview",
+      "layout": [
+        {
+          "widget": {
+            "name": "total_posts_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total Posts",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "total_comments_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "measure(Total Comments)",
+                      "expression": "MEASURE(`Total Comments`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total Comments",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(Total Comments)",
+                  "displayName": "Total Comments"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 3,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "unique_authors_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "measure(Unique Authors)",
+                      "expression": "MEASURE(`Unique Authors`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Active Community Members",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(Unique Authors)",
+                  "displayName": "Unique Authors"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 3,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "engagement_rate_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "measure(High Engagement Rate)",
+                      "expression": "MEASURE(`High Engagement Rate`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "High Engagement Rate",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(High Engagement Rate)",
+                  "format": {
+                    "type": "number-percent",
+                    "decimalPlaces": {
+                      "type": "exact",
+                      "places": 1
+                    }
+                  },
+                  "displayName": "High Engagement Rate"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 3,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "posts_over_time",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "Post Month",
+                      "expression": "`Post Month`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Student Activity Over Time",
+                "showTitle": true
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Post Month",
+                  "displayName": "Post Month",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 6,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "engagement_by_month",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "Post Month",
+                      "expression": "`Post Month`"
+                    },
+                    {
+                      "name": "measure(Avg Post Score)",
+                      "expression": "MEASURE(`Avg Post Score`)"
+                    },
+                    {
+                      "name": "measure(Avg Comments per Post)",
+                      "expression": "MEASURE(`Avg Comments per Post`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Engagement Trends",
+                "showTitle": true
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Post Month",
+                  "displayName": "Post Month",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "primary": {
+                    "fields": [
+                      {
+                        "fieldName": "measure(Avg Post Score)",
+                        "displayName": "Avg Post Score"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  },
+                  "secondary": {
+                    "fields": [
+                      {
+                        "fieldName": "measure(Avg Comments per Post)",
+                        "displayName": "Avg Comments per Post"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  }
+                },
+                "color": {
+                  "legend": {
+                    "position": "bottom"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "posts_by_term",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "Academic Term",
+                      "expression": "`Academic Term`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Activity by Academic Term",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Academic Term",
+                  "displayName": "Academic Term",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 12,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "intro_text",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## IIT Bombay Student Life Explorer\n",
+                "\n",
+                "Analyzing community discussions from r/iitbombay to understand student interests, engagement patterns, and campus culture. Navigate through tabs to explore different aspects of student life.\n",
+                "\n",
+                "**Navigate:** Overview | Topics & Content | Community | Popular Posts"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "posts_by_year",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "Post Year",
+                      "expression": "`Post Year`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Posts by Year",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Post Year",
+                  "displayName": "Post Year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 18,
+            "width": 12,
+            "height": 5
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "topics_content",
+      "displayName": "Topics & Content",
+      "layout": [
+        {
+          "widget": {
+            "name": "posts_by_flair",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "Flair",
+                      "expression": "`Flair`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`Flair` IS NOT NULL AND `Flair` NOT IN ('Untagged')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Discussion Topics (by Flair)",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Flair",
+                  "displayName": "Flair",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "content_type_distribution",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    },
+                    {
+                      "name": "Content Type",
+                      "expression": "`Content Type`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Content Type Distribution",
+                "showTitle": true
+              },
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "measure(Total Posts)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Total Posts"
+                },
+                "color": {
+                  "fieldName": "Content Type",
+                  "legend": {
+                    "position": "right"
+                  },
+                  "displayName": "Content Type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "high_engagement_comparison",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "Flair",
+                      "expression": "`Flair`"
+                    },
+                    {
+                      "name": "measure(High Engagement Posts)",
+                      "expression": "MEASURE(`High Engagement Posts`)"
+                    },
+                    {
+                      "name": "measure(High Engagement Rate)",
+                      "expression": "MEASURE(`High Engagement Rate`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`Flair` IS NOT NULL AND `Flair` NOT IN ('Untagged')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "High Engagement Posts by Topic",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Flair",
+                  "displayName": "Flair",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "primary": {
+                    "fields": [
+                      {
+                        "fieldName": "measure(High Engagement Posts)",
+                        "displayName": "High Engagement Posts"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  },
+                  "secondary": {
+                    "fields": [
+                      {
+                        "fieldName": "measure(High Engagement Rate)",
+                        "displayName": "High Engagement Rate"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  }
+                },
+                "color": {
+                  "legend": {
+                    "position": "bottom"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "detailed_breakdown",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "Flair",
+                      "expression": "`Flair`"
+                    },
+                    {
+                      "name": "Content Type",
+                      "expression": "`Content Type`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    },
+                    {
+                      "name": "measure(Total Comments)",
+                      "expression": "MEASURE(`Total Comments`)"
+                    },
+                    {
+                      "name": "measure(Avg Post Score)",
+                      "expression": "MEASURE(`Avg Post Score`)"
+                    },
+                    {
+                      "name": "measure(High Engagement Rate)",
+                      "expression": "MEASURE(`High Engagement Rate`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`Flair` IS NOT NULL AND `Flair` NOT IN ('Untagged')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Detailed Activity Breakdown",
+                "showTitle": true
+              },
+              "rowsPerPage": 25,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "Flair",
+                    "displayName": "Flair"
+                  },
+                  {
+                    "fieldName": "Content Type",
+                    "displayName": "Content Type"
+                  },
+                  {
+                    "fieldName": "measure(Total Posts)",
+                    "displayName": "Total Posts"
+                  },
+                  {
+                    "fieldName": "measure(Total Comments)",
+                    "displayName": "Total Comments"
+                  },
+                  {
+                    "fieldName": "measure(Avg Post Score)",
+                    "displayName": "Avg Post Score"
+                  },
+                  {
+                    "fieldName": "measure(High Engagement Rate)",
+                    "displayName": "High Engagement Rate"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 15,
+            "width": 12,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "intro_text",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Discussion Topics & Content Analysis\n",
+                "\n",
+                "Explore what IIT Bombay students talk about - from academic questions to cultural events, tech discussions, and campus life."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "community",
+      "displayName": "Community",
+      "layout": [
+        {
+          "widget": {
+            "name": "top_affiliations",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "Author Affiliation",
+                      "expression": "`Author Affiliation`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`Author Affiliation` IS NOT NULL AND `Author Affiliation` NOT IN ('Unknown')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Top Student Communities (Departments, Hostels, Clubs)",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Author Affiliation",
+                  "displayName": "Author Affiliation",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(Total Posts)",
+                  "displayName": "Total Posts",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "top_contributors",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "author_engagement",
+                  "fields": [
+                    {
+                      "name": "author",
+                      "expression": "`author`"
+                    },
+                    {
+                      "name": "author_flair_text",
+                      "expression": "`author_flair_text`"
+                    },
+                    {
+                      "name": "total_posts",
+                      "expression": "`total_posts`"
+                    },
+                    {
+                      "name": "avg_post_score",
+                      "expression": "`avg_post_score`"
+                    },
+                    {
+                      "name": "total_comments_received",
+                      "expression": "`total_comments_received`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Most Active Contributors",
+                "showTitle": true
+              },
+              "rowsPerPage": 25,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "author",
+                    "displayName": "Author"
+                  },
+                  {
+                    "fieldName": "author_flair_text",
+                    "displayName": "Affiliation"
+                  },
+                  {
+                    "fieldName": "total_posts",
+                    "displayName": "Posts"
+                  },
+                  {
+                    "fieldName": "avg_post_score",
+                    "displayName": "Avg Score"
+                  },
+                  {
+                    "fieldName": "total_comments_received",
+                    "displayName": "Total Engagement"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 12,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "affiliation_engagement",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "ad580a30",
+                  "fields": [
+                    {
+                      "name": "Author Affiliation",
+                      "expression": "`Author Affiliation`"
+                    },
+                    {
+                      "name": "measure(Total Posts)",
+                      "expression": "MEASURE(`Total Posts`)"
+                    },
+                    {
+                      "name": "measure(Avg Post Score)",
+                      "expression": "MEASURE(`Avg Post Score`)"
+                    }
+                  ],
+                  "filters": [
+                    {
+                      "expression": "`Author Affiliation` IS NOT NULL AND `Author Affiliation` NOT IN ('Unknown')"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Engagement by Student Communities",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "Author Affiliation",
+                  "displayName": "Author Affiliation",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "primary": {
+                    "fields": [
+                      {
+                        "fieldName": "measure(Total Posts)",
+                        "displayName": "Total Posts"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  },
+                  "secondary": {
+                    "fields": [
+                      {
+                        "fieldName": "measure(Avg Post Score)",
+                        "displayName": "Avg Post Score"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  }
+                },
+                "color": {
+                  "legend": {
+                    "position": "bottom"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "intro_text",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Student Communities & Contributors\n",
+                "\n",
+                "Discover the departments, hostels, and student organizations that actively participate in the r/iitbombay community, and see who are the most engaged contributors."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "top_posts",
+      "displayName": "Popular Posts",
+      "layout": [
+        {
+          "widget": {
+            "name": "intro_text",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## Most Popular Posts on r/iitbombay\n",
+                "\n",
+                "Explore the most engaging content from the IIT Bombay community - posts that resonated most with students through high scores and active discussions."
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "top_posts_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "popular_posts",
+                  "fields": [
+                    {
+                      "name": "title",
+                      "expression": "`title`"
+                    },
+                    {
+                      "name": "author",
+                      "expression": "`author`"
+                    },
+                    {
+                      "name": "flair",
+                      "expression": "`flair`"
+                    },
+                    {
+                      "name": "score",
+                      "expression": "`score`"
+                    },
+                    {
+                      "name": "num_comments",
+                      "expression": "`num_comments`"
+                    },
+                    {
+                      "name": "upvote_ratio",
+                      "expression": "`upvote_ratio`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Most Popular Posts",
+                "showTitle": true
+              },
+              "rowsPerPage": 25,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "title",
+                    "displayName": "Title"
+                  },
+                  {
+                    "fieldName": "author",
+                    "displayName": "Author"
+                  },
+                  {
+                    "fieldName": "flair",
+                    "displayName": "Flair"
+                  },
+                  {
+                    "fieldName": "score",
+                    "displayName": "Score"
+                  },
+                  {
+                    "fieldName": "num_comments",
+                    "displayName": "Comments"
+                  },
+                  {
+                    "fieldName": "upvote_ratio",
+                    "displayName": "Upvote Ratio"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 10
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
