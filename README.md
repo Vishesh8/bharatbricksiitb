@@ -1328,7 +1328,7 @@ resources:
         env:
           # Model endpoint (change to your preferred model)
           - name: MODEL_ENDPOINT
-            value: "databricks-claude-sonnet-4"
+            value: "databricks-llama-4-maverick"
 
           # System prompt from UC (format: catalog.schema.prompt_name@alias)
           - name: SYSTEM_PROMPT_NAME
@@ -1362,22 +1362,48 @@ resources:
             securable_full_name: 'your_catalog.your_schema.your_index'
             securable_type: 'TABLE'
             permission: 'SELECT'
+
+        # IMPORTANT: Genie Space underlying tables
+        # Grant SELECT on ALL tables that your Genie Space queries
+        - name: 'genie_table_1'
+          uc_securable:
+            securable_full_name: 'your_catalog.your_schema.your_table_1'
+            securable_type: 'TABLE'
+            permission: 'SELECT'
+
+        - name: 'genie_table_2'
+          uc_securable:
+            securable_full_name: 'your_catalog.your_schema.your_table_2'
+            securable_type: 'TABLE'
+            permission: 'SELECT'
 ```
+
+> **Important**: When using Genie Space, you must grant `SELECT` permission on **all underlying tables** that the Genie Space queries. Without these permissions, the agent will fail with `PERMISSION_DENIED` errors when trying to fetch data.
 
 **14.3: Environment Variables Reference**
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `MODEL_ENDPOINT` | LLM model to use | `databricks-claude-sonnet-4`, `databricks-gpt-5-2` |
+| `MODEL_ENDPOINT` | LLM model to use | `databricks-llama-4-maverick`, `databricks-claude-sonnet-4` |
 | `SYSTEM_PROMPT_NAME` | UC prompt (catalog.schema.name@alias) | `iitb.bharat_bricks.iitb_lingo_prompt@production` |
 | `GENIE_SPACE_ID` | Genie space ID from URL | `01f135a25c7a1f63b039f802c37eaf5e` |
 | `VECTOR_SEARCH_INDEX` | Vector search index | `iitb.bharat_bricks.vs_gold_posts_index` |
 
-**14.4: Deploy**
+**14.4: Local Development**
+
+For local development, copy `.env.example` to `.env` and configure:
+
+```bash
+cd 07-iitb-baap-agent
+cp .env.example .env
+# Edit .env with your values
+```
+
+**14.5: Deploy**
 
 ```bash
 # Authenticate with your workspace
-databricks configure --profile my-workspace
+databricks auth login --profile my-workspace
 
 # Deploy the app
 databricks bundle deploy --profile my-workspace
