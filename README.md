@@ -860,6 +860,134 @@ Make the analytics interface available to your team:
 3. Add individual users or groups
 4. Click **Share** to grant access
 
+**Step 12: Create Vector Search Index for Semantic Search** ([visual guide](instructions/10-vector-search.pdf))
+
+Set up a vector search endpoint and index to enable advanced semantic search capabilities on your chunked post data. This allows you to perform similarity searches across IIT Bombay subreddit content using natural language queries.
+
+**12.1: Create Vector Search Endpoint**
+
+1. In your Databricks workspace, click **Compute** in the left sidebar
+2. Click the **Vector Search** tab at the top
+3. Click **Create endpoint** button (top right)
+4. In the "Create endpoint" dialog:
+   - **Name**: Enter `vs-iitb-bharat-bricks`
+   - **Type**: Keep default (**Standard** - 20-50ms query latency, cheaper for smaller use cases)
+   - Click **Advanced Settings** to review optional configurations:
+     - **Serverless Usage Policy**: None (default)
+     - **Min DPS Beta**: 0 (default)
+5. Click **Confirm** to create the endpoint
+
+The endpoint will provision and become available for serving vector search queries.
+
+**12.2: Navigate to Vector Index Creation**
+
+1. In your Databricks workspace, click **Workspace** in the left sidebar
+2. Navigate to your Git folder: **bharatbricksiitb** (or your repository name)
+3. Click on the **06-create-vector-index** folder to view the notebook
+4. Open the notebook to view the vector index creation instructions (optional)
+
+**12.3: Create Vector Search Index from Catalog**
+
+1. Click **Catalog** in the left sidebar
+2. Navigate to the catalog tree: **iitb → bharat_bricks → Tables**
+3. Click on **gold_posts_chunked** table
+   - This table contains chunked IIT Bombay posts with chronological comments for vector search
+   - Chunks split at comment/paragraph boundaries, targeting ~4000 chars without truncating any comment
+4. Click the **Create** dropdown button (top right)
+5. Select **Vector search index** from the menu
+
+**12.4: Configure Vector Search Index**
+
+In the "Create vector search index" dialog, configure the following settings:
+
+**Index structure:**
+
+1. **Name**: Enter `vs_gold_posts_index`
+2. **Primary key**: Click the dropdown and select **post_id**
+3. **Columns to index**: Leave blank to index all columns (default)
+
+**Index subtype:**
+
+- Select **Hybrid Index** (combines keyword and vector search for better accuracy)
+- Alternatively: **Full-Text Index** (Beta) for text-only search
+
+**Embeddings:**
+
+1. **Embedding source**: Select **Compute embeddings** (radio button)
+2. **Embedding source column**: Click the dropdown and select **chunk_text**
+   - This is the column containing the chunked post text to generate embeddings for
+3. **Embedding model**: Click the dropdown and select **databricks-gte-large-en**
+   - Databricks Foundation Model for high-quality text embeddings
+4. **Sync computed embeddings**: Leave unchecked (default)
+
+**Compute resources:**
+
+1. **Vector Search endpoint**: Click the dropdown and select **vs-iitb-bharat-bricks Standard**
+   - This is the endpoint you created in Step 12.1
+2. **Sync mode**: Select **Triggered** (radio button)
+   - Index updates are triggered manually or via API
+   - Alternatively: **Continuous** for automatic incremental updates
+
+**12.5: Review Advanced Settings and Create Index**
+
+1. Click **Advanced settings** to expand optional configurations (optional):
+   - **Budget policy**: None (default) - tag the index's costs for team or project budgeting
+   - **Use a separate embedding model for queries**: Unchecked (default)
+2. Review all configuration settings
+3. Click **Create** to start index creation
+
+**12.6: Monitor Index Creation Progress**
+
+The vector search index will now be created:
+
+1. Databricks will process the `gold_posts_chunked` table
+2. Generate embeddings for each chunk using `databricks-gte-large-en` model
+3. Create the vector index for similarity search
+4. Add a computed column `__db_chunk_text_vector` containing the embeddings
+
+You can monitor progress in the index overview page.
+
+**12.7: Verify Vector Search Index**
+
+Once the index creation completes:
+
+1. Navigate to **Catalog** in the left sidebar
+2. Expand: **iitb → bharat_bricks → Tables**
+3. Click on **vs_gold_posts_index** to view the index details
+4. Click the **Sample Data** tab to preview the indexed data
+5. You should see a new column **__db_chunk_text_vector** containing vector embeddings
+
+The vector search index is now ready for semantic search queries across IIT Bombay subreddit content.
+
+**12.8: Test Vector Search (Optional)**
+
+To test the vector search index using Python:
+
+```python
+from databricks.vector_search.client import VectorSearchClient
+
+# Initialize vector search client
+vsc = VectorSearchClient()
+
+# Get the index
+index = vsc.get_index(
+    endpoint_name="vs-iitb-bharat-bricks",
+    index_name="iitb.bharat_bricks.vs_gold_posts_index"
+)
+
+# Perform similarity search
+results = index.similarity_search(
+    query_text="What are students saying about placements?",
+    columns=["post_id", "title", "chunk_text", "author"],
+    num_results=5
+)
+
+# Display results
+print(results)
+```
+
+This will return the top 5 most semantically similar chunks to your query, enabling natural language search across student discussions.
+
 ---
 
 **Questions?** Open an issue or reach out during the workshop!

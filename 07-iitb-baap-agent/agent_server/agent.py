@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from datetime import datetime
 from typing import AsyncGenerator, Optional
 
@@ -39,9 +40,29 @@ sp_workspace_client = WorkspaceClient()
 _cached_tools = None
 _cache_lock = asyncio.Lock()
 
-# Prompt Registry URI for system prompt (requires version or alias suffix)
-# Syntax: prompts:/name/version OR prompts:/name@alias
-PROMPT_REGISTRY_URI = "prompts:/dbdemos_vishesh.bharat_bricks.iitb-lingo-prompt@production"
+# Configuration from environment variables (set via databricks.yml)
+CATALOG_NAME = os.environ.get("CATALOG_NAME", "dbdemos_vishesh")
+SCHEMA_NAME = os.environ.get("SCHEMA_NAME", "bharat_bricks")
+VECTOR_INDEX_NAME = os.environ.get("VECTOR_INDEX_NAME", "gold_posts_vs_index")
+GENIE_SPACE_ID = os.environ.get("GENIE_SPACE_ID", "01f1294bf4441d919d11ea6b4796f9da")
+PROMPT_NAME = os.environ.get("PROMPT_NAME", "iitb-lingo-prompt")
+PROMPT_ALIAS = os.environ.get("PROMPT_ALIAS", "production")
+
+# Construct derived configurations
+PROMPT_REGISTRY_URI = f"prompts:/{CATALOG_NAME}.{SCHEMA_NAME}.{PROMPT_NAME}@{PROMPT_ALIAS}"
+
+# Validation
+REQUIRED_CONFIGS = {
+    "CATALOG_NAME": CATALOG_NAME,
+    "SCHEMA_NAME": SCHEMA_NAME,
+    "VECTOR_INDEX_NAME": VECTOR_INDEX_NAME,
+    "GENIE_SPACE_ID": GENIE_SPACE_ID,
+}
+missing = [k for k, v in REQUIRED_CONFIGS.items() if not v]
+if missing:
+    raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
+
+logger.info(f"Agent configured with: {CATALOG_NAME}.{SCHEMA_NAME}, Vector Index: {VECTOR_INDEX_NAME}, Genie: {GENIE_SPACE_ID}")
 
 
 @tool
@@ -55,16 +76,18 @@ def init_mcp_client(workspace_client: WorkspaceClient) -> DatabricksMultiServerM
     host_name = get_databricks_host_from_env()
 
     # Vector Search MCP Server for RAG
+    vector_search_url = f"{host_name}/api/2.0/mcp/vector-search/{CATALOG_NAME}/{SCHEMA_NAME}/{VECTOR_INDEX_NAME}"
     vector_search_server = DatabricksMCPServer(
         name="iitb-posts-search",
-        url=f"{host_name}/api/2.0/mcp/vector-search/dbdemos_vishesh/bharat_bricks/gold_posts_vs_index",
+        url=vector_search_url,
         workspace_client=workspace_client,
     )
 
     # Genie MCP Server for Analytics
+    genie_url = f"{host_name}/api/2.0/mcp/genie/{GENIE_SPACE_ID}"
     genie_server = DatabricksMCPServer(
         name="iitb-analytics",
-        url=f"{host_name}/api/2.0/mcp/genie/01f1294bf4441d919d11ea6b4796f9da",
+        url=genie_url,
         workspace_client=workspace_client,
     )
 

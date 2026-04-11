@@ -1,6 +1,34 @@
 bundle:
   name: iitb_baap_agent
 
+variables:
+  # Unity Catalog configuration
+  catalog_name:
+    description: "Unity Catalog name containing the agent resources"
+
+  schema_name:
+    description: "Schema name within the catalog"
+
+  vector_index_name:
+    description: "Vector search index name for RAG (posts documents)"
+
+  # Genie configuration
+  genie_space_id:
+    description: "Genie Space ID for analytics queries"
+
+  # Prompt configuration (with defaults)
+  prompt_name:
+    description: "Prompt registry name"
+    default: "iitb-lingo-prompt"
+
+  prompt_alias:
+    description: "Prompt version alias (e.g., production, latest)"
+    default: "production"
+
+  # MLflow experiment
+  mlflow_experiment_id:
+    description: "MLflow experiment ID for tracing"
+
 resources:
   apps:
     iitb_baap_agent:
@@ -22,19 +50,31 @@ resources:
             value: "300"
           - name: MLFLOW_EXPERIMENT_ID
             value_from: "experiment"
+          - name: CATALOG_NAME
+            value: "${var.catalog_name}"
+          - name: SCHEMA_NAME
+            value: "${var.schema_name}"
+          - name: VECTOR_INDEX_NAME
+            value: "${var.vector_index_name}"
+          - name: GENIE_SPACE_ID
+            value: "${var.genie_space_id}"
+          - name: PROMPT_NAME
+            value: "${var.prompt_name}"
+          - name: PROMPT_ALIAS
+            value: "${var.prompt_alias}"
 
       # Resources which this app has access to
       resources:
         # MLflow experiment for tracing
         - name: 'experiment'
           experiment:
-            experiment_id: "1159599289799406"
+            experiment_id: "${var.mlflow_experiment_id}"
             permission: 'CAN_MANAGE'
 
         # Vector Search Index (RAG)
         - name: 'posts_vector_index'
           uc_securable:
-            securable_full_name: 'dbdemos_vishesh.bharat_bricks.gold_posts_vs_index'
+            securable_full_name: '${var.catalog_name}.${var.schema_name}.${var.vector_index_name}'
             securable_type: 'TABLE'
             permission: 'SELECT'
 
@@ -42,7 +82,7 @@ resources:
         - name: 'iitb_genie'
           genie_space:
             name: 'IITB Junta Analytics'
-            space_id: '01f1294bf4441d919d11ea6b4796f9da'
+            space_id: '${var.genie_space_id}'
             permission: 'CAN_RUN'
 
 targets:
