@@ -11,16 +11,25 @@ End-to-end data + AI pipeline analyzing the r/iitbombay subreddit — IIT Bombay
 | Path | Description |
 |------|-------------|
 | `instructions/` | **Start here!** Step-by-step PDF guides with screenshots |
-| ↳ `1-register-databricks-free-account.pdf` | Sign up for Databricks Free Edition |
-| ↳ `2-catalog-data-setup.pdf` | Create catalog, schema, volume & upload data |
-| ↳ `3-create-git-folder.pdf` | Connect GitHub repo to Databricks workspace |
+| ↳ `01-register-databricks-free-account.pdf` | Sign up for Databricks Free Edition |
+| ↳ `02-catalog-data-setup.pdf` | Create catalog, schema, volume & upload data |
+| ↳ `03-create-git-folder.pdf` | Connect GitHub repo to Databricks workspace |
+| ↳ `04-data-ingestion.pdf` | Run data ingestion notebooks using AI assistant |
+| ↳ `05-data-transformation.pdf` | DLT pipeline with AI-powered content moderation |
+| ↳ `06-unity-catalog.pdf` | Data quality, classification & security policies |
+| ↳ `07-metric-view.pdf` | Create unified analytics metric view |
+| ↳ `08-ai-bi-dashboards.pdf` | Build interactive AI/BI dashboards |
+| ↳ `09-ai-bi-genie.pdf` | Deploy Genie Space for natural language queries |
+| ↳ `10-vector-search.pdf` | Set up vector search endpoint & index |
+| ↳ `11-langgraph-agent-app.pdf` | Deploy conversational agent on Databricks Apps |
 | `raw_data/` | Source JSON files (~1,300 posts, ~17K comments) |
 | `01-data-ingestion.ipynb` | Auto Loader pipeline → `posts` and `comments` tables |
 | `02-data-transformation/` | SQL transforms: silver_posts, silver_comments, gold_posts, gold_comments |
 | `03-metric-view.ipynb` | Creates `iitb_subreddit_metrics` metric view with 20+ measures |
-| `04-life-at-iit-bombay.lvdash.json` | Lakeview dashboard (exportable) |
+| `04-iitb-student-life-explorer.lvdash.json` | Lakeview dashboard (exportable) |
 | `05-iitb-junta-analytics-genie/` | Genie Space export + deploy script |
-| `06-iitb-baap-agent/` | Conversational agent (Responses API + Genie MCP) |
+| `06-create-vector-index.ipynb` | Creates vector search index on chunked gold posts |
+| `07-iitb-baap-agent/` | Conversational agent (Responses API + Genie MCP) |
 
 ## Data Model
 
@@ -32,12 +41,6 @@ End-to-end data + AI pipeline analyzing the r/iitbombay subreddit — IIT Bombay
 | `comments` | Comments with threading (body, score, depth) | `comment_id` (PK), `post_id` (FK) |
 | `gold_posts` | Cleaned posts with content classification | `post_id` |
 | `gold_comments` | Cleaned comments excluding deleted/bots | `comment_id` |
-
-### Metric View
-
-`iitb_subreddit_metrics` — unified analytics layer with:
-- **Dimensions**: Post Date, Academic Term, Flair, Author, Affiliation, Content Type
-- **Measures**: Total Posts, Avg Score, High Engagement Rate, Thread Depth, OP Engagement Rate
 
 ## Setup
 
@@ -705,7 +708,7 @@ This Genie space analyzes student life at IIT Bombay through the r/iitbombay sub
 
 ANALYTICS TERMINOLOGY:
 - Engagement = comments + votes combined
-- High engagement post = 2M+ comments OR 10M+ score
+- High engagement post = 2+ comments OR 10+ score
 - OP = Original Poster, thread depth = how nested replies are
 - Join posts and comments on post_id
 
@@ -1041,7 +1044,7 @@ Build and deploy a production-ready conversational agent using LangGraph and MLf
 
 **13.7: Create System Prompt**
 
-**7.1: Navigate to Agent Repository**
+**Navigate to Agent Repository**
 
 1. Open your Git repository in a new tab or locally
 2. Navigate to the `07-iitb-baap-agent` folder
@@ -1050,14 +1053,14 @@ Build and deploy a production-ready conversational agent using LangGraph and MLf
 
 The system prompt defines the agent's behavior, guidelines, and response format for answering questions about IIT Bombay campus life using r/iitbombay subreddit data.
 
-**7.2: Create Prompt in MLflow**
+**Create Prompt in MLflow**
 
 1. Return to Databricks and click **Experiments** in the left sidebar
 2. Click on **exp-iitb-baap-agent** experiment
 3. Click the **Prompts** tab in the left panel
 4. Click **New prompt** button
 
-**7.3: Select Prompt Schema**
+**Select Prompt Schema**
 
 1. Click **Choose** button next to "Target schema"
 2. In the "Select an asset" dialog:
@@ -1065,20 +1068,20 @@ The system prompt defines the agent's behavior, guidelines, and response format 
    - Click **iitb** → **bharat_bricks** to expand the catalog tree
 3. Click **Confirm** to select the schema
 
-**7.4: Name and Create Prompt Version**
+**Name and Create Prompt Version**
 
 1. Click the **Enter prompt name** field
 2. **Prompt name**: Type `iitb_lingo_prompt`
 3. Click **Create** to create the prompt
 
-**7.5: Add Prompt Content**
+**Add Prompt Content**
 
 1. Click **Create new version** button
 2. In the prompt text field, paste the system prompt you copied earlier (Cmd+V or Ctrl+V)
    - The prompt should start with: "You are the IIT Bombay Campus Advisor..."
 3. Review the prompt content to ensure correct formatting
 
-**7.6: Add Prompt Alias**
+**Add Prompt Alias**
 
 1. Click **Add aliases** link (right sidebar under "Aliases")
 2. In the "Add/Edit alias for prompt version 1" dialog:
@@ -1090,7 +1093,7 @@ The `production` alias allows you to reference this prompt version in your agent
 
 **13.8: Set Up Local Development Environment**
 
-**8.1: Install Databricks CLI**
+**Install Databricks CLI**
 
 Install the Databricks CLI to sync files between your local machine and Databricks workspace.
 
@@ -1111,7 +1114,7 @@ winget install Databricks.DatabricksCLI
 curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
 ```
 
-**8.2: Verify CLI Installation**
+**Verify CLI Installation**
 
 ```bash
 databricks --version
@@ -1119,7 +1122,7 @@ databricks --version
 
 Expected output: `databricks version X.X.X` (version 0.205.0 or above)
 
-**8.3: Authenticate with Databricks**
+**Authenticate with Databricks**
 
 ```bash
 databricks configure --token
@@ -1131,7 +1134,7 @@ Follow the prompts to enter:
 
 **13.9: Sync App Files to Local Machine**
 
-**9.1: Export App Template**
+**Export App Template**
 
 Copy the agent app template from Databricks to your local computer:
 
@@ -1141,7 +1144,7 @@ databricks workspace export-dir /Workspace/Users/<username>@gmail.com/databricks
 
 Replace `<username>@gmail.com` with your Databricks workspace username.
 
-**9.2: Sync Future Edits (Bidirectional)**
+**Sync Future Edits (Bidirectional)**
 
 Set up continuous syncing to automatically sync changes between Databricks and your local environment:
 
@@ -1156,7 +1159,7 @@ This command will:
 
 **13.10: Run Agent Locally for Development**
 
-**10.1: Set Up Python Environment**
+**Set Up Python Environment**
 
 Navigate to your agent directory and set up dependencies:
 
@@ -1174,7 +1177,7 @@ pip install -r requirements.txt
 uv pip install -r requirements.txt
 ```
 
-**10.2: Run the Agent Server**
+**Run the Agent Server**
 
 Start the local development server:
 
@@ -1190,7 +1193,7 @@ INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000
 ```
 
-**10.3: Test the Agent Locally**
+**Test the Agent Locally**
 
 Open your browser and navigate to:
 ```
@@ -1209,7 +1212,7 @@ http://localhost:8501
 
 **13.11: Deploy Agent to Databricks Apps**
 
-**11.1: Deploy Using Databricks CLI**
+**Deploy Using Databricks CLI**
 
 From your local agent directory, deploy to Databricks Apps:
 
@@ -1217,7 +1220,7 @@ From your local agent directory, deploy to Databricks Apps:
 databricks apps deploy agent-iitb-agent --source-code-path ~/agent-iitb-agent
 ```
 
-**11.2: Monitor Deployment**
+**Monitor Deployment**
 
 The deployment process will:
 1. Upload your local code to Databricks workspace
@@ -1232,7 +1235,7 @@ App deployed successfully!
 App URL: https://<workspace-url>/apps/<app-id>
 ```
 
-**11.3: Access Your Deployed Agent**
+**Access Your Deployed Agent**
 
 1. Navigate to **Compute → Apps** in your Databricks workspace
 2. Click on **iitb-agent** in the apps list
@@ -1244,7 +1247,7 @@ App URL: https://<workspace-url>/apps/<app-id>
 
 **13.12: Test the Deployed Agent**
 
-**12.1: Ask Questions About IIT Bombay**
+**Ask Questions About IIT Bombay**
 
 Try these example queries:
 
@@ -1264,7 +1267,7 @@ Tell me about hostel life and campus culture at IIT Bombay.
 What are the trending discussions about academics and courses?
 ```
 
-**12.2: Verify Agent Responses**
+**Verify Agent Responses**
 
 The agent should:
 - Use the vector search tool to find relevant posts and comments
@@ -1276,7 +1279,7 @@ The agent should:
 
 **13.13: Monitor Agent Performance**
 
-**13.1: View MLflow Traces**
+**View MLflow Traces**
 
 1. Click **Experiments** in the left sidebar
 2. Click on **exp-iitb-baap-agent**
@@ -1287,14 +1290,14 @@ The agent should:
    - LLM responses
    - Execution time and token usage
 
-**13.2: Review Agent Logs**
+**Review Agent Logs**
 
 1. Navigate to **Compute → Apps**
 2. Click on **iitb-agent**
 3. Click the **Logs** tab to view server logs
 4. Monitor for errors, warnings, and performance issues
 
-**13.3: Analyze Sessions**
+**Analyze Sessions**
 
 1. In the MLflow experiment, click the **Sessions** tab
 2. Review conversation sessions grouped by user
