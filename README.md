@@ -1450,41 +1450,6 @@ databricks bundle deploy --target dev
 | **No tool results** | Genie or VS permissions | Grant `CAN_RUN` on Genie space and `SELECT` on vector index |
 | **Session not tracking** | MLflow experiment misconfigured | Verify `MLFLOW_EXPERIMENT_ID` in `.env` and `databricks.yml` |
 
-### Common Validation Queries
-
-**Check table row counts:**
-```sql
-SELECT 'posts' as tbl, COUNT(*) FROM <catalog>.<schema>.posts
-UNION ALL SELECT 'comments', COUNT(*) FROM <catalog>.<schema>.comments
-UNION ALL SELECT 'gold_posts', COUNT(*) FROM <catalog>.<schema>.gold_posts
-UNION ALL SELECT 'gold_comments', COUNT(*) FROM <catalog>.<schema>.gold_comments
-UNION ALL SELECT 'gold_posts_chunked', COUNT(*) FROM <catalog>.<schema>.gold_posts_chunked;
-```
-
-**Test vector search:**
-```python
-from databricks.vector_search.client import VectorSearchClient
-vsc = VectorSearchClient()
-index = vsc.get_index(endpoint_name="<endpoint>", index_name="<catalog>.<schema>.vs_gold_posts_index")
-print(index.describe())  # Check status
-results = index.similarity_search(query_text="placements", columns=["title"], num_results=3)
-print(results)
-```
-
-**Test Genie space:**
-```python
-from databricks.sdk import WorkspaceClient
-w = WorkspaceClient()
-response = w.api_client.do("GET", f"/api/2.0/genie/spaces/<space_id>")
-print(response)  # Should return space metadata
-```
-
-**Pre-flight check (agent):**
-```bash
-cd 07-iitb-baap-agent
-uv run preflight  # Starts server, sends test request, verifies response
-```
-
 ---
 
 **Questions?** Open an issue or reach out during the workshop!
