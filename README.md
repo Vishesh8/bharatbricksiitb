@@ -52,12 +52,6 @@ End-to-end data + AI pipeline analyzing the r/iitbombay subreddit — IIT Bombay
 - **SQL warehouse** (Pro or Serverless for Genie) — Free Edition includes Starter warehouse
 - **Python 3.11+** with `databricks-sdk` (for local agent development only)
 
-> **📖 Visual Guides**: See the `instructions/` folder for step-by-step screenshots:
-> - [1-register-databricks-free-account.pdf](instructions/1-register-databricks-free-account.pdf) — Sign up for Databricks Free Edition
-> - [2-catalog-data-setup.pdf](instructions/2-catalog-data-setup.pdf) — Create catalog, schema, volume & upload data
-> - [3-create-git-folder.pdf](instructions/3-create-git-folder.pdf) — Connect GitHub repo to Databricks workspace
-> - [4-data-ingestion.pdf](instructions/4-data-ingestion.pdf) — Run data ingestion notebooks using AI assistant
-
 ### Quick Start
 
 **Step 1: Get a Databricks Workspace** ([visual guide](instructions/1-register-databricks-free-account.pdf))
